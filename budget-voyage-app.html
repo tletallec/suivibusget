@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Budget Voyage">
+<meta name="theme-color" content="#2B2A28">
+<title>Budget Voyage</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FAF6EF;
+    --paper-2:#F1EBDD;
+    --paper-3:#E8E0CC;
+    --ink:#2B2A28;
+    --ink-soft:#6b6862;
+    --terracotta:#C1552C;
+    --terracotta-soft:#e9c3b2;
+    --sauge:#6B7A5E;
+    --sauge-soft:#d7dfd0;
+    --brique:#A63D2F;
+    --brique-soft:#f0d3ce;
+    --line:#E4DCC9;
+    --card:#ffffff;
+    --shadow: 0 2px 10px rgba(43,42,40,0.06);
+  }
+  [data-theme="dark"]{
+    --paper:#1C1B19;
+    --paper-2:#26241F;
+    --paper-3:#332F28;
+    --ink:#F3EEE2;
+    --ink-soft:#a39d8d;
+    --terracotta:#E07850;
+    --terracotta-soft:#4a2e22;
+    --sauge:#93a686;
+    --sauge-soft:#2c3327;
+    --brique:#e0685a;
+    --brique-soft:#3d2320;
+    --line:#3a362e;
+    --card:#242220;
+    --shadow: 0 2px 14px rgba(0,0,0,0.35);
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    overscroll-behavior-y:none;
+    transition:background .2s ease, color .2s ease;
+  }
+  #app{
+    max-width:520px;
+    margin:0 auto;
+    height:100vh;
+    height:100dvh;
+    display:flex;
+    flex-direction:column;
+    position:relative;
+  }
+  .screen{
+    display:none;
+    flex-direction:column;
+    flex:1;
+    min-height:0;
+  }
+  .screen.active{display:flex;}
+  .topbar{
+    padding:calc(env(safe-area-inset-top) + 18px) 22px 8px;
+    flex-shrink:0;
+  }
+  .topbar .eyebrow{
+    font-size:12.5px;
+    color:var(--ink-soft);
+    margin:0 0 2px;
+    font-weight:500;
+  }
+  .topbar h1{
+    font-family:'Fraunces',serif;
+    font-size:26px;
+    font-weight:500;
+    margin:0;
+    color:var(--ink);
+  }
+  .content{
+    flex:1;
+    overflow-y:auto;
+    padding:8px 22px 24px;
+    -webkit-overflow-scrolling:touch;
+  }
+
+  /* ---------- Hero (résumé) ---------- */
+  .hero-card{
+    background:var(--ink);
+    border-radius:20px;
+    padding:24px 22px;
+    color:var(--paper);
+    margin-bottom:18px;
+    position:relative;
+  }
+  [data-theme="dark"] .hero-card{ background:var(--card); border:1px solid var(--line); }
+  .hero-card .label{
+    font-size:13px;
+    color:#c9c4b6;
+    margin:0 0 6px;
+  }
+  [data-theme="dark"] .hero-card .label{ color:var(--ink-soft); }
+  .hero-card .amount{
+    font-family:'Fraunces',serif;
+    font-size:42px;
+    font-weight:500;
+    margin:0;
+    font-variant-numeric:tabular-nums;
+    letter-spacing:-0.5px;
+    line-height:1.05;
+  }
+  .hero-card .amount.neg{ color:var(--brique); }
+  .hero-card .amount span{
+    font-size:19px;
+    color:#c9c4b6;
+    font-family:'Inter',sans-serif;
+  }
+  [data-theme="dark"] .hero-card .amount span{ color:var(--ink-soft); }
+  .hero-sub{
+    display:flex;
+    justify-content:space-between;
+    margin-top:16px;
+    padding-top:14px;
+    border-top:1px solid rgba(255,255,255,0.14);
+    font-size:13px;
+    gap:6px;
+  }
+  [data-theme="dark"] .hero-sub{ border-top:1px solid var(--line); }
+  .hero-sub div span{display:block;color:#c9c4b6;font-size:11.5px;margin-bottom:2px;}
+  [data-theme="dark"] .hero-sub div span{ color:var(--ink-soft); }
+  .hero-sub div b{font-variant-numeric:tabular-nums;font-weight:600;}
+
+  .section-title{
+    font-size:12.5px;
+    font-weight:600;
+    color:var(--ink-soft);
+    margin:22px 0 10px;
+    letter-spacing:0.2px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+  }
+
+  /* ---------- Catégories (barres) ---------- */
+  .cat-row{ margin-bottom:14px; }
+  .cat-row .cat-top{
+    display:flex;
+    justify-content:space-between;
+    font-size:14px;
+    margin-bottom:6px;
+  }
+  .cat-row .cat-top .name{font-weight:600;color:var(--ink);}
+  .cat-row .cat-top .nums{color:var(--ink-soft);font-variant-numeric:tabular-nums;font-size:13px;}
+  .bar-bg{
+    height:8px;
+    background:var(--paper-3);
+    border-radius:5px;
+    overflow:hidden;
+  }
+  .bar-fill{ height:100%; border-radius:5px; transition:width .3s ease; }
+  .bar-fill.ok{background:var(--sauge);}
+  .bar-fill.warn{background:var(--terracotta);}
+  .bar-fill.over{background:var(--brique);}
+  .empty-hint{
+    color:var(--ink-soft);
+    font-size:13.5px;
+    padding:18px 0;
+    text-align:center;
+    line-height:1.5;
+  }
+
+  /* ---------- Toggle chart ---------- */
+  .toggle-pill{
+    display:flex;
+    background:var(--paper-2);
+    border-radius:10px;
+    padding:3px;
+    gap:2px;
+  }
+  .toggle-pill button{
+    border:none;
+    background:transparent;
+    font-family:'Inter';
+    font-size:12px;
+    font-weight:600;
+    color:var(--ink-soft);
+    padding:6px 12px;
+    border-radius:8px;
+    cursor:pointer;
+  }
+  .toggle-pill button.active{
+    background:var(--card);
+    color:var(--ink);
+    box-shadow:var(--shadow);
+  }
+
+  .chart-wrap{
+    background:var(--card);
+    border-radius:16px;
+    padding:18px;
+    box-shadow:var(--shadow);
+    display:flex;
+    align-items:center;
+    gap:18px;
+  }
+  .chart-legend{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    min-width:0;
+  }
+  .legend-item{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-size:12.5px;
+    color:var(--ink);
+  }
+  .legend-dot{ width:9px; height:9px; border-radius:50%; flex-shrink:0; }
+  .legend-item .lname{ flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .legend-item .lval{ color:var(--ink-soft); font-variant-numeric:tabular-nums; flex-shrink:0; }
+
+  /* ---------- Country list ---------- */
+  .country-list{ display:flex; flex-direction:column; gap:10px; }
+  .country-item{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    background:var(--paper-2);
+    border-radius:14px;
+    padding:12px 16px;
+  }
+  .country-item .cname{ font-size:14px; font-weight:600; color:var(--ink); display:flex; align-items:center; gap:10px; }
+  .country-item .flag-dot{ width:8px;height:8px;border-radius:50%; background:var(--terracotta); flex-shrink:0; }
+  .country-item .camount{font-size:14px;font-variant-numeric:tabular-nums;color:var(--ink-soft);}
+
+  /* ---------- Tab bar ---------- */
+  .tabbar{
+    display:flex;
+    align-items:flex-end;
+    justify-content:space-around;
+    padding:8px 6px calc(env(safe-area-inset-bottom) + 10px);
+    background:var(--paper);
+    border-top:1px solid var(--line);
+    flex-shrink:0;
+  }
+  .tab{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:3px;
+    font-size:10.5px;
+    color:var(--ink-soft);
+    font-weight:500;
+    background:none;
+    border:none;
+    font-family:'Inter';
+    padding:4px 6px;
+    cursor:pointer;
+  }
+  .tab.active{ color:var(--terracotta); }
+  .tab svg{ width:22px; height:22px; }
+  .fab{
+    width:50px;height:50px;
+    border-radius:50%;
+    background:var(--terracotta);
+    color:white;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:26px;
+    margin-top:-26px;
+    box-shadow:0 8px 20px rgba(193,85,44,0.4);
+    border:none;
+    cursor:pointer;
+    flex-shrink:0;
+  }
+
+  /* ---------- Forms ---------- */
+  label{ display:block; font-size:12.5px; font-weight:600; color:var(--ink-soft); margin:16px 0 6px; }
+  label:first-of-type{ margin-top:0; }
+  input[type=text], input[type=number], input[type=date], select, textarea{
+    width:100%;
+    padding:13px 14px;
+    border-radius:12px;
+    border:1px solid var(--line);
+    background:var(--card);
+    color:var(--ink);
+    font-family:'Inter';
+    font-size:15px;
+    outline:none;
+  }
+  input:focus, select:focus, textarea:focus{ border-color:var(--terracotta); }
+  .amount-input-row{
+    display:flex;
+    gap:8px;
+  }
+  .amount-input-row input{ flex:1; font-family:'Fraunces',serif; font-size:24px; font-weight:500; }
+  .amount-input-row select{ width:100px; flex-shrink:0; }
+  .converted-hint{
+    font-size:12.5px;
+    color:var(--ink-soft);
+    margin-top:6px;
+  }
+  .converted-hint b{ color:var(--terracotta); font-variant-numeric:tabular-nums; }
+
+  .chip-row{ display:flex; flex-wrap:wrap; gap:8px; }
+  .chip{
+    padding:9px 14px;
+    border-radius:20px;
+    border:1px solid var(--line);
+    background:var(--card);
+    font-size:13.5px;
+    font-weight:500;
+    color:var(--ink);
+    cursor:pointer;
+    font-family:'Inter';
+  }
+  .chip.selected{ background:var(--terracotta); border-color:var(--terracotta); color:white; }
+
+  datalist{}
+
+  .primary-btn{
+    width:100%;
+    padding:15px;
+    border-radius:14px;
+    border:none;
+    background:var(--terracotta);
+    color:white;
+    font-family:'Inter';
+    font-size:15.5px;
+    font-weight:600;
+    margin-top:26px;
+    cursor:pointer;
+  }
+  .primary-btn:disabled{ opacity:0.4; }
+  .ghost-btn{
+    width:100%;
+    padding:13px;
+    border-radius:14px;
+    border:1px solid var(--line);
+    background:transparent;
+    color:var(--ink-soft);
+    font-family:'Inter';
+    font-size:14px;
+    font-weight:500;
+    margin-top:10px;
+    cursor:pointer;
+  }
+  .danger-btn{ color:var(--brique); border-color:var(--brique-soft); }
+
+  /* ---------- Journal list ---------- */
+  .entry-list{ display:flex; flex-direction:column; gap:8px; }
+  .entry{
+    background:var(--card);
+    border-radius:14px;
+    padding:13px 16px;
+    box-shadow:var(--shadow);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+  }
+  .entry .e-left{ min-width:0; }
+  .entry .e-cat{
+    font-size:11px;
+    font-weight:600;
+    color:var(--terracotta);
+    text-transform:uppercase;
+    letter-spacing:0.3px;
+    margin-bottom:2px;
+  }
+  .entry .e-desc{ font-size:14.5px; font-weight:500; color:var(--ink); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .entry .e-meta{ font-size:12px; color:var(--ink-soft); margin-top:2px; }
+  .entry .e-right{ text-align:right; flex-shrink:0; }
+  .entry .e-amount{ font-size:15px; font-weight:600; color:var(--ink); font-variant-numeric:tabular-nums; }
+  .entry .e-orig{ font-size:11.5px; color:var(--ink-soft); }
+
+  .day-header{
+    font-size:12px;
+    font-weight:600;
+    color:var(--ink-soft);
+    margin:18px 0 8px;
+  }
+  .day-header:first-child{ margin-top:0; }
+
+  /* ---------- Modal (edit/delete) ---------- */
+  .sheet-overlay{
+    position:fixed; inset:0;
+    background:rgba(0,0,0,0.4);
+    display:none;
+    align-items:flex-end;
+    justify-content:center;
+    z-index:50;
+  }
+  .sheet-overlay.active{ display:flex; }
+  .sheet{
+    background:var(--paper);
+    width:100%;
+    max-width:520px;
+    border-radius:22px 22px 0 0;
+    padding:20px 22px calc(env(safe-area-inset-bottom) + 20px);
+    max-height:85vh;
+    overflow-y:auto;
+  }
+  .sheet-handle{
+    width:36px; height:4px;
+    background:var(--line);
+    border-radius:3px;
+    margin:0 auto 16px;
+  }
+  .sheet h2{
+    font-family:'Fraunces',serif;
+    font-size:20px;
+    font-weight:500;
+    margin:0 0 4px;
+  }
+
+  /* ---------- Settings ---------- */
+  .rate-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:12px 0;
+    border-bottom:1px solid var(--line);
+    gap:10px;
+  }
+  .rate-row:last-child{ border-bottom:none; }
+  .rate-row .rcur{ font-weight:600; font-size:14.5px; width:60px; }
+  .rate-row .rdesc{ font-size:12px; color:var(--ink-soft); flex:1; }
+  .rate-row input{ width:90px; text-align:right; padding:8px 10px; font-size:14px; }
+
+  .toggle-switch{
+    width:46px; height:26px;
+    background:var(--paper-3);
+    border-radius:20px;
+    position:relative;
+    cursor:pointer;
+    flex-shrink:0;
+  }
+  .toggle-switch.on{ background:var(--terracotta); }
+  .toggle-switch .knob{
+    width:20px;height:20px;
+    background:white;
+    border-radius:50%;
+    position:absolute;
+    top:3px; left:3px;
+    transition:left .2s ease;
+    box-shadow:0 1px 3px rgba(0,0,0,0.3);
+  }
+  .toggle-switch.on .knob{ left:23px; }
+
+  .settings-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:14px 0;
+    border-bottom:1px solid var(--line);
+  }
+  .settings-row .srow-label{ font-size:14.5px; font-weight:500; }
+  .settings-row .srow-desc{ font-size:12px; color:var(--ink-soft); margin-top:2px; }
+
+  .toast{
+    position:fixed;
+    bottom:100px;
+    left:50%;
+    transform:translateX(-50%);
+    background:var(--ink);
+    color:var(--paper);
+    padding:11px 20px;
+    border-radius:24px;
+    font-size:13.5px;
+    font-weight:500;
+    z-index:100;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .25s ease, transform .25s ease;
+  }
+  [data-theme="dark"] .toast{ background:var(--terracotta); color:white; }
+  .toast.show{ opacity:1; transform:translateX(-50%) translateY(-6px); }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- ===================== RÉSUMÉ ===================== -->
+  <section class="screen active" id="screen-resume">
+    <div class="topbar">
+      <p class="eyebrow" id="resume-eyebrow">Ton voyage</p>
+      <h1>Résumé</h1>
+    </div>
+    <div class="content">
+      <div class="hero-card">
+        <p class="label">Reste à dépenser</p>
+        <p class="amount" id="hero-reste">0 <span>€</span></p>
+        <div class="hero-sub">
+          <div><span>Budget total</span><b id="hero-total">0 €</b></div>
+          <div><span>Dépensé</span><b id="hero-depense">0 €</b></div>
+        </div>
+      </div>
+
+      <p class="section-title">PAR CATÉGORIE</p>
+      <div id="cat-list"></div>
+
+      <p class="section-title">
+        RÉPARTITION
+        <span class="toggle-pill">
+          <button id="toggle-cat" class="active" onclick="setChartMode('cat')">Catégorie</button>
+          <button id="toggle-pays" onclick="setChartMode('pays')">Pays</button>
+        </span>
+      </p>
+      <div class="chart-wrap" id="chart-wrap">
+        <svg width="120" height="120" viewBox="0 0 120 120" id="pie-svg"></svg>
+        <div class="chart-legend" id="chart-legend"></div>
+      </div>
+
+      <p class="section-title">PAR PAYS</p>
+      <div class="country-list" id="country-list"></div>
+    </div>
+  </section>
+
+  <!-- ===================== AJOUTER ===================== -->
+  <section class="screen" id="screen-add">
+    <div class="topbar">
+      <p class="eyebrow">Nouvelle dépense</p>
+      <h1>Ajouter</h1>
+    </div>
+    <div class="content">
+      <label>Montant</label>
+      <div class="amount-input-row">
+        <input type="number" inputmode="decimal" id="add-amount" placeholder="0" step="0.01">
+        <select id="add-currency"></select>
+      </div>
+      <p class="converted-hint" id="add-converted"></p>
+
+      <label>Catégorie</label>
+      <div class="chip-row" id="add-cat-chips"></div>
+
+      <label>Pays</label>
+      <input type="text" id="add-country" list="country-suggestions" placeholder="ex : Canada, Colombie, Pérou...">
+      <datalist id="country-suggestions"></datalist>
+
+      <label>Description (optionnel)</label>
+      <input type="text" id="add-desc" placeholder="ex : Auberge 2 nuits">
+
+      <label>Date</label>
+      <input type="date" id="add-date">
+
+      <button class="primary-btn" id="add-submit" onclick="submitExpense()">Ajouter la dépense</button>
+    </div>
+  </section>
+
+  <!-- ===================== JOURNAL ===================== -->
+  <section class="screen" id="screen-journal">
+    <div class="topbar">
+      <p class="eyebrow" id="journal-count">0 dépenses</p>
+      <h1>Journal</h1>
+    </div>
+    <div class="content" id="journal-content">
+    </div>
+  </section>
+
+  <!-- ===================== ÉQUIPEMENT ===================== -->
+  <section class="screen" id="screen-equip">
+    <div class="topbar">
+      <p class="eyebrow" id="equip-total-eyebrow">0 € au total</p>
+      <h1>Équipement</h1>
+    </div>
+    <div class="content">
+      <label>Article</label>
+      <input type="text" id="equip-name" placeholder="ex : Sac à dos 45L">
+
+      <label>Coût</label>
+      <div class="amount-input-row">
+        <input type="number" inputmode="decimal" id="equip-amount" placeholder="0" step="0.01">
+        <select id="equip-currency"></select>
+      </div>
+      <p class="converted-hint" id="equip-converted"></p>
+
+      <button class="primary-btn" onclick="submitEquip()">Ajouter l'article</button>
+
+      <p class="section-title">ARTICLES</p>
+      <div class="entry-list" id="equip-list"></div>
+    </div>
+  </section>
+
+  <!-- ===================== RÉGLAGES ===================== -->
+  <section class="screen" id="screen-settings">
+    <div class="topbar">
+      <p class="eyebrow">Configuration</p>
+      <h1>Réglages</h1>
+    </div>
+    <div class="content">
+      <label>Budget total du voyage (€)</label>
+      <input type="number" inputmode="decimal" id="settings-budget">
+
+      <div class="settings-row" style="margin-top:20px;">
+        <div>
+          <div class="srow-label">Mode sombre</div>
+          <div class="srow-desc">Plus confortable le soir</div>
+        </div>
+        <div class="toggle-switch" id="dark-toggle" onclick="toggleDark()"><div class="knob"></div></div>
+      </div>
+
+      <p class="section-title">TAUX DE CHANGE (vers €)</p>
+      <p class="empty-hint" style="padding:0 0 10px; text-align:left;">1 unité de la devise = combien d'euros ? À mettre à jour toi-même selon le taux du moment.</p>
+      <div id="rates-list"></div>
+
+      <label>Ajouter une devise</label>
+      <div class="amount-input-row">
+        <input type="text" id="new-cur-code" placeholder="ex : COP" style="text-transform:uppercase;" maxlength="4">
+        <input type="number" id="new-cur-rate" placeholder="taux" step="0.0001">
+      </div>
+      <button class="ghost-btn" onclick="addCurrency()">+ Ajouter cette devise</button>
+
+      <button class="ghost-btn danger-btn" onclick="confirmReset()" style="margin-top:30px;">Réinitialiser toutes les données</button>
+    </div>
+  </section>
+
+  <!-- Tab bar -->
+  <nav class="tabbar">
+    <button class="tab active" data-screen="resume" onclick="showScreen('resume')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12l2-2 4 4 8-8 4 4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Résumé
+    </button>
+    <button class="tab" data-screen="journal" onclick="showScreen('journal')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h16M4 12h16M4 18h10" stroke-linecap="round"/></svg>
+      Journal
+    </button>
+    <button class="fab" onclick="showScreen('add')">+</button>
+    <button class="tab" data-screen="equip" onclick="showScreen('equip')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 7L9 18l-5-5" stroke-linecap="round" stroke-linejoin="round" style="display:none"/><rect x="4" y="7" width="16" height="13" rx="2"/><path d="M8 7V5a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+      Équip.
+    </button>
+    <button class="tab" data-screen="settings" onclick="showScreen('settings')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06A1.65 1.65 0 005.6 15a1.65 1.65 0 00-1.51-1H4a2 2 0 010-4h.09A1.65 1.65 0 005.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06A1.65 1.65 0 009 5.6a1.65 1.65 0 001-1.51V4a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+      Réglages
+    </button>
+  </nav>
+
+</div>
+
+<!-- Edit/delete sheet -->
+<div class="sheet-overlay" id="edit-sheet">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <h2 id="edit-title">Modifier la dépense</h2>
+    <div id="edit-body"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============ DONNÉES ============ */
+const DEFAULT_RATES = {
+  EUR: 1,
+  CAD: 0.68,
+  MXN: 0.048,
+  USD: 0.92,
+  COP: 0.00022,
+  ARS: 0.00095,
+  BRL: 0.16,
+  BOB: 0.13,
+  PEN: 0.24,
+  GBP: 1.17
+};
+const CURRENCY_LABELS = {
+  EUR:"Euro", CAD:"Dollar CAD", MXN:"Peso MXN", USD:"Dollar US",
+  COP:"Peso COL", ARS:"Peso ARG", BRL:"Real BRÉ", BOB:"Boliviano",
+  PEN:"Sol PÉR", GBP:"Livre GBP"
+};
+const CATEGORIES = ["Logement","Transport","Nourriture","Activités","Équipement","Autre"];
+const CAT_COLORS = {
+  "Logement":"#C1552C","Transport":"#6B7A5E","Nourriture":"#8a7f6a",
+  "Activités":"#4a6670","Équipement":"#A63D2F","Autre":"#b8a888"
+};
+const COUNTRY_PALETTE = ["#C1552C","#6B7A5E","#4a6670","#A63D2F","#b8a888","#8a5a8a","#3d7a5c","#c99b3d"];
+
+function loadState(){
+  const raw = localStorage.getItem('budgetVoyageState');
+  if(raw){
+    try{ return JSON.parse(raw); }catch(e){}
+  }
+  return {
+    budget: 12000,
+    rates: {...DEFAULT_RATES},
+    expenses: [], // {id, amount, currency, amountEUR, category, country, desc, date}
+    equipment: [], // {id, name, amount, currency, amountEUR}
+    dark: false
+  };
+}
+let state = loadState();
+
+function saveState(){
+  localStorage.setItem('budgetVoyageState', JSON.stringify(state));
+}
+
+/* ============ UTILS ============ */
+function fmtEUR(n){
+  const rounded = Math.round(n);
+  return rounded.toLocaleString('fr-FR') + ' €';
+}
+function fmtNum(n){
+  return Math.round(n).toLocaleString('fr-FR');
+}
+function toEUR(amount, currency){
+  const rate = state.rates[currency] ?? 1;
+  return amount * rate;
+}
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+function todayISO(){ return new Date().toISOString().slice(0,10); }
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(()=>t.classList.remove('show'), 1800);
+}
+
+/* ============ NAVIGATION ============ */
+function showScreen(name){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-'+name).classList.add('active');
+  document.querySelectorAll('.tab').forEach(t=>{
+    t.classList.toggle('active', t.dataset.screen === name);
+  });
+  if(name === 'resume') renderResume();
+  if(name === 'journal') renderJournal();
+  if(name === 'equip') renderEquip();
+  if(name === 'settings') renderSettings();
+  if(name === 'add') renderAddForm();
+}
+
+/* ============ RÉSUMÉ ============ */
+let chartMode = 'cat';
+function setChartMode(mode){
+  chartMode = mode;
+  document.getElementById('toggle-cat').classList.toggle('active', mode==='cat');
+  document.getElementById('toggle-pays').classList.toggle('active', mode==='pays');
+  renderChart();
+}
+
+function getCategoryTotals(){
+  const totals = {};
+  CATEGORIES.forEach(c=>totals[c]=0);
+  state.expenses.forEach(e=>{ totals[e.category] = (totals[e.category]||0) + e.amountEUR; });
+  totals["Équipement"] = (totals["Équipement"]||0) + state.equipment.reduce((s,e)=>s+e.amountEUR,0);
+  return totals;
+}
+function getCountryTotals(){
+  const totals = {};
+  state.expenses.forEach(e=>{
+    const c = e.country && e.country.trim() ? e.country.trim() : "Autre";
+    totals[c] = (totals[c]||0) + e.amountEUR;
+  });
+  return totals;
+}
+
+function renderResume(){
+  const catTotals = getCategoryTotals();
+  const totalSpent = Object.values(catTotals).reduce((a,b)=>a+b,0);
+  const reste = state.budget - totalSpent;
+
+  document.getElementById('hero-total').textContent = fmtEUR(state.budget);
+  document.getElementById('hero-depense').textContent = fmtEUR(totalSpent);
+  const heroReste = document.getElementById('hero-reste');
+  heroReste.innerHTML = fmtNum(reste) + ' <span>€</span>';
+  heroReste.classList.toggle('neg', reste < 0);
+
+  const nCountries = Object.keys(getCountryTotals()).length;
+  document.getElementById('resume-eyebrow').textContent = nCountries > 0
+    ? nCountries + (nCountries>1 ? ' pays visités' : ' pays visité')
+    : 'Ton voyage';
+
+  // Catégories — barres (budget par catégorie = pas de sous-budget par défaut, on affiche juste le total dépensé triable)
+  const catList = document.getElementById('cat-list');
+  const sortedCats = CATEGORIES.slice().sort((a,b)=>catTotals[b]-catTotals[a]);
+  const maxCat = Math.max(...Object.values(catTotals), 1);
+  if(totalSpent === 0){
+    catList.innerHTML = '<p class="empty-hint">Aucune dépense enregistrée pour l\'instant.<br>Appuie sur le bouton + pour commencer.</p>';
+  } else {
+    catList.innerHTML = sortedCats.map(cat=>{
+      const val = catTotals[cat];
+      if(val === 0) return '';
+      const pct = Math.min(100, (val/maxCat)*100);
+      return `<div class="cat-row">
+        <div class="cat-top"><span class="name">${cat}</span><span class="nums">${fmtEUR(val)}</span></div>
+        <div class="bar-bg"><div class="bar-fill ok" style="width:${pct}%; background:${CAT_COLORS[cat]}"></div></div>
+      </div>`;
+    }).join('');
+  }
+
+  renderChart();
+
+  // Pays
+  const countryTotals = getCountryTotals();
+  const countryList = document.getElementById('country-list');
+  const sortedCountries = Object.entries(countryTotals).sort((a,b)=>b[1]-a[1]);
+  if(sortedCountries.length === 0){
+    countryList.innerHTML = '<p class="empty-hint">Aucun pays enregistré pour l\'instant.</p>';
+  } else {
+    countryList.innerHTML = sortedCountries.map(([country,val],i)=>{
+      const color = COUNTRY_PALETTE[i % COUNTRY_PALETTE.length];
+      return `<div class="country-item">
+        <span class="cname"><span class="flag-dot" style="background:${color}"></span>${country}</span>
+        <span class="camount">${fmtEUR(val)}</span>
+      </div>`;
+    }).join('');
+  }
+}
+
+function renderChart(){
+  const svg = document.getElementById('pie-svg');
+  const legend = document.getElementById('chart-legend');
+  let data, colors;
+  if(chartMode === 'cat'){
+    const totals = getCategoryTotals();
+    data = Object.entries(totals).filter(([k,v])=>v>0);
+    colors = data.map(([k])=>CAT_COLORS[k]);
+  } else {
+    const totals = getCountryTotals();
+    data = Object.entries(totals).filter(([k,v])=>v>0).sort((a,b)=>b[1]-a[1]);
+    colors = data.map((_,i)=>COUNTRY_PALETTE[i % COUNTRY_PALETTE.length]);
+  }
+
+  if(data.length === 0){
+    svg.innerHTML = `<circle cx="60" cy="60" r="50" fill="none" stroke="var(--paper-3)" stroke-width="14"/>`;
+    legend.innerHTML = '<p class="empty-hint" style="padding:0;">Pas encore de données.</p>';
+    return;
+  }
+
+  const total = data.reduce((s,[,v])=>s+v,0);
+  let cumulative = 0;
+  const r = 50, cx=60, cy=60, circ = 2*Math.PI*r;
+  let paths = '';
+  data.forEach(([label,val],i)=>{
+    const frac = val/total;
+    const dash = frac*circ;
+    const gap = circ - dash;
+    const offset = -cumulative*circ;
+    paths += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${colors[i]}" stroke-width="16"
+      stroke-dasharray="${dash} ${gap}" stroke-dashoffset="${offset}" transform="rotate(-90 ${cx} ${cy})"/>`;
+    cumulative += frac;
+  });
+  svg.innerHTML = paths;
+
+  legend.innerHTML = data.map(([label,val],i)=>{
+    const pct = Math.round((val/total)*100);
+    return `<div class="legend-item">
+      <span class="legend-dot" style="background:${colors[i]}"></span>
+      <span class="lname">${label}</span>
+      <span class="lval">${pct}%</span>
+    </div>`;
+  }).join('');
+}
+
+/* ============ AJOUTER ============ */
+function populateCurrencySelect(selectEl){
+  selectEl.innerHTML = Object.keys(state.rates).map(c=>`<option value="${c}">${c}</option>`).join('');
+}
+function renderAddForm(){
+  const catChips = document.getElementById('add-cat-chips');
+  if(!catChips.dataset.built){
+    catChips.innerHTML = CATEGORIES.map(c=>`<button type="button" class="chip" data-cat="${c}" onclick="selectCatChip('${c}')">${c}</button>`).join('');
+    catChips.dataset.built = "1";
+  }
+  populateCurrencySelect(document.getElementById('add-currency'));
+  document.getElementById('add-date').value = todayISO();
+
+  const countryList = document.getElementById('country-suggestions');
+  const knownCountries = [...new Set(state.expenses.map(e=>e.country).filter(Boolean))];
+  countryList.innerHTML = knownCountries.map(c=>`<option value="${c}">`).join('');
+
+  document.getElementById('add-amount').addEventListener('input', updateConvertedHint);
+  document.getElementById('add-currency').addEventListener('change', updateConvertedHint);
+  updateConvertedHint();
+}
+let selectedCat = null;
+function selectCatChip(cat){
+  selectedCat = cat;
+  document.querySelectorAll('#add-cat-chips .chip').forEach(ch=>{
+    ch.classList.toggle('selected', ch.dataset.cat === cat);
+  });
+}
+function updateConvertedHint(){
+  const amount = parseFloat(document.getElementById('add-amount').value) || 0;
+  const cur = document.getElementById('add-currency').value;
+  const hint = document.getElementById('add-converted');
+  if(amount > 0 && cur !== 'EUR'){
+    hint.innerHTML = `≈ <b>${fmtEUR(toEUR(amount, cur))}</b>`;
+  } else {
+    hint.innerHTML = '';
+  }
+}
+function submitExpense(){
+  const amount = parseFloat(document.getElementById('add-amount').value);
+  const currency = document.getElementById('add-currency').value;
+  const country = document.getElementById('add-country').value.trim();
+  const desc = document.getElementById('add-desc').value.trim();
+  const date = document.getElementById('add-date').value || todayISO();
+
+  if(!amount || amount <= 0){ showToast('Entre un montant valide'); return; }
+  if(!selectedCat){ showToast('Choisis une catégorie'); return; }
+
+  state.expenses.push({
+    id: uid(), amount, currency, amountEUR: toEUR(amount, currency),
+    category: selectedCat, country: country || 'Autre', desc, date
+  });
+  saveState();
+  showToast('Dépense ajoutée');
+
+  document.getElementById('add-amount').value = '';
+  document.getElementById('add-desc').value = '';
+  selectedCat = null;
+  document.querySelectorAll('#add-cat-chips .chip').forEach(ch=>ch.classList.remove('selected'));
+  updateConvertedHint();
+
+  showScreen('resume');
+}
+
+/* ============ JOURNAL ============ */
+function renderJournal(){
+  const container = document.getElementById('journal-content');
+  document.getElementById('journal-count').textContent =
+    state.expenses.length + (state.expenses.length>1 ? ' dépenses' : ' dépense');
+
+  if(state.expenses.length === 0){
+    container.innerHTML = '<p class="empty-hint">Aucune dépense pour l\'instant.</p>';
+    return;
+  }
+  const sorted = state.expenses.slice().sort((a,b)=> (b.date||'').localeCompare(a.date||'') || b.id.localeCompare(a.id));
+  const byDay = {};
+  sorted.forEach(e=>{
+    const d = e.date || 'Sans date';
+    if(!byDay[d]) byDay[d] = [];
+    byDay[d].push(e);
+  });
+
+  let html = '';
+  Object.entries(byDay).forEach(([day, items])=>{
+    const dayLabel = day === 'Sans date' ? day : new Date(day+'T12:00:00').toLocaleDateString('fr-FR', {weekday:'short', day:'numeric', month:'short'});
+    html += `<div class="day-header">${dayLabel}</div>`;
+    html += '<div class="entry-list">';
+    items.forEach(e=>{
+      const origLabel = e.currency !== 'EUR' ? `${e.amount.toLocaleString('fr-FR')} ${e.currency}` : '';
+      html += `<div class="entry" onclick="openEditExpense('${e.id}')">
+        <div class="e-left">
+          <div class="e-cat">${e.category}</div>
+          <div class="e-desc">${e.desc || e.category}</div>
+          <div class="e-meta">${e.country}</div>
+        </div>
+        <div class="e-right">
+          <div class="e-amount">${fmtEUR(e.amountEUR)}</div>
+          ${origLabel ? `<div class="e-orig">${origLabel}</div>` : ''}
+        </div>
+      </div>`;
+    });
+    html += '</div>';
+  });
+  container.innerHTML = html;
+}
+
+function openEditExpense(id){
+  const e = state.expenses.find(x=>x.id===id);
+  if(!e) return;
+  const overlay = document.getElementById('edit-sheet');
+  document.getElementById('edit-title').textContent = 'Modifier la dépense';
+  const body = document.getElementById('edit-body');
+  body.innerHTML = `
+    <label>Montant</label>
+    <div class="amount-input-row">
+      <input type="number" id="edit-amount" value="${e.amount}" step="0.01">
+      <select id="edit-currency"></select>
+    </div>
+    <label>Catégorie</label>
+    <div class="chip-row" id="edit-cat-chips">${CATEGORIES.map(c=>`<button type="button" class="chip ${c===e.category?'selected':''}" data-cat="${c}">${c}</button>`).join('')}</div>
+    <label>Pays</label>
+    <input type="text" id="edit-country" value="${e.country}">
+    <label>Description</label>
+    <input type="text" id="edit-desc" value="${e.desc||''}">
+    <label>Date</label>
+    <input type="date" id="edit-date" value="${e.date||todayISO()}">
+    <button class="primary-btn" onclick="saveEditExpense('${id}')">Enregistrer</button>
+    <button class="ghost-btn danger-btn" onclick="deleteExpense('${id}')">Supprimer cette dépense</button>
+    <button class="ghost-btn" onclick="closeSheet()">Annuler</button>
+  `;
+  populateCurrencySelect(document.getElementById('edit-currency'));
+  document.getElementById('edit-currency').value = e.currency;
+  document.querySelectorAll('#edit-cat-chips .chip').forEach(ch=>{
+    ch.addEventListener('click', ()=>{
+      document.querySelectorAll('#edit-cat-chips .chip').forEach(c=>c.classList.remove('selected'));
+      ch.classList.add('selected');
+    });
+  });
+  overlay.classList.add('active');
+}
+function saveEditExpense(id){
+  const e = state.expenses.find(x=>x.id===id);
+  if(!e) return;
+  const amount = parseFloat(document.getElementById('edit-amount').value);
+  const currency = document.getElementById('edit-currency').value;
+  const catChip = document.querySelector('#edit-cat-chips .chip.selected');
+  if(!amount || amount<=0){ showToast('Montant invalide'); return; }
+  e.amount = amount;
+  e.currency = currency;
+  e.amountEUR = toEUR(amount, currency);
+  e.category = catChip ? catChip.dataset.cat : e.category;
+  e.country = document.getElementById('edit-country').value.trim() || 'Autre';
+  e.desc = document.getElementById('edit-desc').value.trim();
+  e.date = document.getElementById('edit-date').value;
+  saveState();
+  closeSheet();
+  renderJournal();
+  showToast('Modifié');
+}
+function deleteExpense(id){
+  state.expenses = state.expenses.filter(x=>x.id!==id);
+  saveState();
+  closeSheet();
+  renderJournal();
+  showToast('Supprimé');
+}
+function closeSheet(){
+  document.getElementById('edit-sheet').classList.remove('active');
+}
+
+/* ============ ÉQUIPEMENT ============ */
+function renderEquip(){
+  populateCurrencySelect(document.getElementById('equip-currency'));
+  document.getElementById('equip-amount').oninput = ()=>{
+    const amount = parseFloat(document.getElementById('equip-amount').value) || 0;
+    const cur = document.getElementById('equip-currency').value;
+    const hint = document.getElementById('equip-converted');
+    hint.innerHTML = (amount>0 && cur!=='EUR') ? `≈ <b>${fmtEUR(toEUR(amount,cur))}</b>` : '';
+  };
+  document.getElementById('equip-currency').onchange = document.getElementById('equip-amount').oninput;
+
+  const total = state.equipment.reduce((s,e)=>s+e.amountEUR,0);
+  document.getElementById('equip-total-eyebrow').textContent = fmtEUR(total) + ' au total';
+
+  const list = document.getElementById('equip-list');
+  if(state.equipment.length === 0){
+    list.innerHTML = '<p class="empty-hint">Aucun article pour l\'instant.</p>';
+    return;
+  }
+  list.innerHTML = state.equipment.slice().reverse().map(e=>{
+    const origLabel = e.currency !== 'EUR' ? `${e.amount.toLocaleString('fr-FR')} ${e.currency}` : '';
+    return `<div class="entry" onclick="deleteEquipConfirm('${e.id}')">
+      <div class="e-left">
+        <div class="e-desc">${e.name}</div>
+      </div>
+      <div class="e-right">
+        <div class="e-amount">${fmtEUR(e.amountEUR)}</div>
+        ${origLabel ? `<div class="e-orig">${origLabel}</div>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+function submitEquip(){
+  const name = document.getElementById('equip-name').value.trim();
+  const amount = parseFloat(document.getElementById('equip-amount').value);
+  const currency = document.getElementById('equip-currency').value;
+  if(!name){ showToast('Nom de l\'article requis'); return; }
+  if(!amount || amount<=0){ showToast('Montant invalide'); return; }
+  state.equipment.push({ id: uid(), name, amount, currency, amountEUR: toEUR(amount,currency) });
+  saveState();
+  document.getElementById('equip-name').value = '';
+  document.getElementById('equip-amount').value = '';
+  document.getElementById('equip-converted').innerHTML = '';
+  renderEquip();
+  showToast('Article ajouté');
+}
+function deleteEquipConfirm(id){
+  const overlay = document.getElementById('edit-sheet');
+  document.getElementById('edit-title').textContent = 'Supprimer l\'article ?';
+  document.getElementById('edit-body').innerHTML = `
+    <p style="color:var(--ink-soft); font-size:14px;">Cette action est définitive.</p>
+    <button class="primary-btn danger-btn" style="background:var(--brique);" onclick="deleteEquip('${id}')">Supprimer</button>
+    <button class="ghost-btn" onclick="closeSheet()">Annuler</button>
+  `;
+  overlay.classList.add('active');
+}
+function deleteEquip(id){
+  state.equipment = state.equipment.filter(x=>x.id!==id);
+  saveState();
+  closeSheet();
+  renderEquip();
+  showToast('Supprimé');
+}
+
+/* ============ RÉGLAGES ============ */
+function renderSettings(){
+  document.getElementById('settings-budget').value = state.budget;
+  document.getElementById('settings-budget').onchange = (e)=>{
+    const v = parseFloat(e.target.value);
+    if(v >= 0){ state.budget = v; saveState(); showToast('Budget mis à jour'); }
+  };
+  document.getElementById('dark-toggle').classList.toggle('on', state.dark);
+
+  const ratesList = document.getElementById('rates-list');
+  ratesList.innerHTML = Object.entries(state.rates).map(([cur,rate])=>`
+    <div class="rate-row">
+      <span class="rcur">${cur}</span>
+      <span class="rdesc">${CURRENCY_LABELS[cur] || ''}</span>
+      <input type="number" step="0.0001" value="${rate}" data-cur="${cur}" onchange="updateRate('${cur}', this.value)" ${cur==='EUR' ? 'disabled' : ''}>
+    </div>
+  `).join('');
+}
+function updateRate(cur, val){
+  const v = parseFloat(val);
+  if(v > 0){
+    state.rates[cur] = v;
+    // recompute affected amounts
+    state.expenses.forEach(e=>{ if(e.currency===cur) e.amountEUR = toEUR(e.amount, cur); });
+    state.equipment.forEach(e=>{ if(e.currency===cur) e.amountEUR = toEUR(e.amount, cur); });
+    saveState();
+    showToast('Taux mis à jour');
+  }
+}
+function addCurrency(){
+  const code = document.getElementById('new-cur-code').value.trim().toUpperCase();
+  const rate = parseFloat(document.getElementById('new-cur-rate').value);
+  if(!code || code.length < 2){ showToast('Code devise invalide'); return; }
+  if(!rate || rate <= 0){ showToast('Taux invalide'); return; }
+  state.rates[code] = rate;
+  saveState();
+  document.getElementById('new-cur-code').value = '';
+  document.getElementById('new-cur-rate').value = '';
+  renderSettings();
+  showToast('Devise ajoutée');
+}
+function toggleDark(){
+  state.dark = !state.dark;
+  saveState();
+  applyTheme();
+  document.getElementById('dark-toggle').classList.toggle('on', state.dark);
+}
+function applyTheme(){
+  document.body.setAttribute('data-theme', state.dark ? 'dark' : 'light');
+  document.querySelector('meta[name=theme-color]').setAttribute('content', state.dark ? '#1C1B19' : '#2B2A28');
+}
+function confirmReset(){
+  const overlay = document.getElementById('edit-sheet');
+  document.getElementById('edit-title').textContent = 'Réinitialiser ?';
+  document.getElementById('edit-body').innerHTML = `
+    <p style="color:var(--ink-soft); font-size:14px;">Toutes les dépenses, l'équipement et les taux personnalisés seront supprimés définitivement de cet appareil.</p>
+    <button class="primary-btn danger-btn" style="background:var(--brique);" onclick="doReset()">Tout réinitialiser</button>
+    <button class="ghost-btn" onclick="closeSheet()">Annuler</button>
+  `;
+  overlay.classList.add('active');
+}
+function doReset(){
+  localStorage.removeItem('budgetVoyageState');
+  state = loadState();
+  closeSheet();
+  applyTheme();
+  showScreen('resume');
+  showToast('Données réinitialisées');
+}
+
+/* ============ INIT ============ */
+document.getElementById('edit-sheet').addEventListener('click', (e)=>{
+  if(e.target === document.getElementById('edit-sheet')) closeSheet();
+});
+
+applyTheme();
+renderResume();
+</script>
+</body>
+</html>
