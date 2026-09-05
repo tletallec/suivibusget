@@ -553,7 +553,26 @@
       <label>Description (optionnel)</label>
       <input type="text" id="add-desc" placeholder="ex : Auberge 2 nuits">
 
-      <label>Date</label>
+      <div id="lodging-fields" style="display:none;">
+        <label>Date d'arrivée</label>
+        <input type="date" id="add-checkin">
+
+        <label>Nombre de nuits</label>
+        <input type="number" inputmode="numeric" id="add-nights" min="1" step="1" placeholder="ex : 3">
+      </div>
+
+      <div id="transport-fields" style="display:none;">
+        <label>Type de transport</label>
+        <div class="chip-row" id="add-transport-type-chips"></div>
+
+        <label>Lieu de départ</label>
+        <input type="text" id="add-from" placeholder="ex : Montréal">
+
+        <label>Lieu d'arrivée</label>
+        <input type="text" id="add-to" placeholder="ex : Québec">
+      </div>
+
+      <label id="add-date-label">Date</label>
       <input type="date" id="add-date">
 
       <button class="primary-btn" id="add-submit" onclick="submitExpense()">Ajouter la dépense</button>
@@ -681,6 +700,7 @@ const CURRENCY_LABELS = {
   PEN:"Sol PÉR", GBP:"Livre GBP"
 };
 const CATEGORIES = ["Logement","Transport","Nourriture","Activités","Équipement","Autre"];
+const TRANSPORT_TYPES = ["Avion","Bus","Taxi","Autre"];
 const CAT_COLORS = {
   "Logement":"#C1552C","Transport":"#6B7A5E","Nourriture":"#8a7f6a",
   "Activités":"#4a6670","Équipement":"#A63D2F","Autre":"#b8a888"
@@ -705,6 +725,40 @@ let state = loadState();
 function saveState(){
   localStorage.setItem('budgetVoyageState', JSON.stringify(state));
 }
+
+/* Préremplissage unique des logements Canada déjà réservés (source : conversation Canada itinerary planning) */
+const CANADA_LODGING_SEED = [
+  { checkin:'2026-09-10', nights:3, amount:96,     desc:'Montréal' },
+  { checkin:'2026-09-13', nights:2, amount:61.60,  desc:'Trois-Rivières / Mauricie' },
+  { checkin:'2026-09-15', nights:3, amount:0,      desc:"Québec #1 — chez une amie" },
+  { checkin:'2026-09-18', nights:2, amount:52,     desc:'Charlevoix / Baie-Saint-Paul' },
+  { checkin:'2026-09-20', nights:4, amount:102,    desc:'Tadoussac' },
+  { checkin:'2026-09-24', nights:2, amount:115.03, desc:'Saguenay / Sainte-Rose-du-Nord' },
+  { checkin:'2026-09-26', nights:3, amount:103.17, desc:'Québec #2 — retour' },
+  { checkin:'2026-09-29', nights:2, amount:53.15,  desc:'Ottawa' },
+  { checkin:'2026-10-01', nights:1, amount:82.09,  desc:'Kingston' },
+  { checkin:'2026-10-02', nights:3, amount:151.37, desc:'Toronto' },
+];
+function seedCanadaLodgingIfNeeded(){
+  if(state.seededCanadaLodging) return;
+  CANADA_LODGING_SEED.forEach(item=>{
+    state.expenses.push({
+      id: uid(),
+      amount: item.amount,
+      currency: 'EUR',
+      amountEUR: item.amount,
+      category: 'Logement',
+      country: 'Canada',
+      desc: item.desc,
+      date: item.checkin,
+      checkin: item.checkin,
+      nights: item.nights
+    });
+  });
+  state.seededCanadaLodging = true;
+  saveState();
+}
+seedCanadaLodgingIfNeeded();
 
 /* ============ UTILS ============ */
 function fmtEUR(n){
@@ -885,13 +939,39 @@ function renderAddForm(){
   document.getElementById('add-amount').addEventListener('input', updateConvertedHint);
   document.getElementById('add-currency').addEventListener('change', updateConvertedHint);
   updateConvertedHint();
+  updateLodgingFieldsVisibility(selectedCat);
 }
 let selectedCat = null;
+let selectedTransportType = null;
 function selectCatChip(cat){
   selectedCat = cat;
   document.querySelectorAll('#add-cat-chips .chip').forEach(ch=>{
     ch.classList.toggle('selected', ch.dataset.cat === cat);
   });
+  updateLodgingFieldsVisibility(cat);
+}
+function selectTransportTypeChip(type){
+  selectedTransportType = type;
+  document.querySelectorAll('#add-transport-type-chips .chip').forEach(ch=>{
+    ch.classList.toggle('selected', ch.dataset.type === type);
+  });
+}
+function updateLodgingFieldsVisibility(cat){
+  const isLodging = cat === 'Logement';
+  const isTransport = cat === 'Transport';
+  document.getElementById('lodging-fields').style.display = isLodging ? 'block' : 'none';
+  document.getElementById('transport-fields').style.display = isTransport ? 'block' : 'none';
+  document.getElementById('add-date-label').textContent = (isLodging || isTransport) ? 'Date (jour de la dépense)' : 'Date';
+  if(isLodging && !document.getElementById('add-checkin').value){
+    document.getElementById('add-checkin').value = document.getElementById('add-date').value || todayISO();
+  }
+  if(isTransport){
+    const chipRow = document.getElementById('add-transport-type-chips');
+    if(!chipRow.dataset.built){
+      chipRow.innerHTML = TRANSPORT_TYPES.map(t=>`<button type="button" class="chip" data-type="${t}" onclick="selectTransportTypeChip('${t}')">${t}</button>`).join('');
+      chipRow.dataset.built = "1";
+    }
+  }
 }
 function updateConvertedHint(){
   const amount = parseFloat(document.getElementById('add-amount').value) || 0;
@@ -913,17 +993,40 @@ function submitExpense(){
   if(!amount || amount <= 0){ showToast('Entre un montant valide'); return; }
   if(!selectedCat){ showToast('Choisis une catégorie'); return; }
 
-  state.expenses.push({
+  const entry = {
     id: uid(), amount, currency, amountEUR: toEUR(amount, currency),
     category: selectedCat, country: country || 'Autre', desc, date
-  });
+  };
+
+  if(selectedCat === 'Logement'){
+    const nights = parseInt(document.getElementById('add-nights').value, 10);
+    const checkin = document.getElementById('add-checkin').value;
+    if(checkin) entry.checkin = checkin;
+    if(nights && nights > 0) entry.nights = nights;
+  }
+
+  if(selectedCat === 'Transport'){
+    const from = document.getElementById('add-from').value.trim();
+    const to = document.getElementById('add-to').value.trim();
+    if(selectedTransportType) entry.transportType = selectedTransportType;
+    if(from) entry.from = from;
+    if(to) entry.to = to;
+  }
+
+  state.expenses.push(entry);
   saveState();
   showToast('Dépense ajoutée');
 
   document.getElementById('add-amount').value = '';
   document.getElementById('add-desc').value = '';
+  document.getElementById('add-nights').value = '';
+  document.getElementById('add-from').value = '';
+  document.getElementById('add-to').value = '';
   selectedCat = null;
+  selectedTransportType = null;
   document.querySelectorAll('#add-cat-chips .chip').forEach(ch=>ch.classList.remove('selected'));
+  document.querySelectorAll('#add-transport-type-chips .chip').forEach(ch=>ch.classList.remove('selected'));
+  updateLodgingFieldsVisibility(null);
   updateConvertedHint();
 
   showScreen('resume');
@@ -954,11 +1057,24 @@ function renderJournal(){
     html += '<div class="entry-list">';
     items.forEach(e=>{
       const origLabel = e.currency !== 'EUR' ? `${e.amount.toLocaleString('fr-FR')} ${e.currency}` : '';
+      let metaLine = e.country;
+      if(e.category === 'Logement' && (e.nights || e.checkin)){
+        const parts = [];
+        if(e.checkin) parts.push('arrivée ' + new Date(e.checkin+'T12:00:00').toLocaleDateString('fr-FR', {day:'numeric', month:'short'}));
+        if(e.nights) parts.push(e.nights + (e.nights>1 ? ' nuits' : ' nuit'));
+        metaLine = e.country + ' · ' + parts.join(' · ');
+      }
+      if(e.category === 'Transport' && (e.from || e.to || e.transportType)){
+        const parts = [];
+        if(e.transportType) parts.push(e.transportType);
+        if(e.from || e.to) parts.push(`${e.from||'?'} → ${e.to||'?'}`);
+        metaLine = e.country + ' · ' + parts.join(' · ');
+      }
       html += `<div class="entry" onclick="openEditExpense('${e.id}')">
         <div class="e-left">
           <div class="e-cat">${e.category}</div>
           <div class="e-desc">${e.desc || e.category}</div>
-          <div class="e-meta">${e.country}</div>
+          <div class="e-meta">${metaLine}</div>
         </div>
         <div class="e-right">
           <div class="e-amount">${fmtEUR(e.amountEUR)}</div>
@@ -977,6 +1093,8 @@ function openEditExpense(id){
   const overlay = document.getElementById('edit-sheet');
   document.getElementById('edit-title').textContent = 'Modifier la dépense';
   const body = document.getElementById('edit-body');
+  const isLodging = e.category === 'Logement';
+  const isTransport = e.category === 'Transport';
   body.innerHTML = `
     <label>Montant</label>
     <div class="amount-input-row">
@@ -989,6 +1107,20 @@ function openEditExpense(id){
     <input type="text" id="edit-country" value="${e.country}">
     <label>Description</label>
     <input type="text" id="edit-desc" value="${e.desc||''}">
+    <div id="edit-lodging-fields" style="display:${isLodging ? 'block' : 'none'};">
+      <label>Date d'arrivée</label>
+      <input type="date" id="edit-checkin" value="${e.checkin||''}">
+      <label>Nombre de nuits</label>
+      <input type="number" id="edit-nights" min="1" step="1" value="${e.nights||''}">
+    </div>
+    <div id="edit-transport-fields" style="display:${isTransport ? 'block' : 'none'};">
+      <label>Type de transport</label>
+      <div class="chip-row" id="edit-transport-type-chips">${TRANSPORT_TYPES.map(t=>`<button type="button" class="chip ${t===e.transportType?'selected':''}" data-type="${t}">${t}</button>`).join('')}</div>
+      <label>Lieu de départ</label>
+      <input type="text" id="edit-from" value="${e.from||''}">
+      <label>Lieu d'arrivée</label>
+      <input type="text" id="edit-to" value="${e.to||''}">
+    </div>
     <label>Date</label>
     <input type="date" id="edit-date" value="${e.date||todayISO()}">
     <button class="primary-btn" onclick="saveEditExpense('${id}')">Enregistrer</button>
@@ -1000,6 +1132,14 @@ function openEditExpense(id){
   document.querySelectorAll('#edit-cat-chips .chip').forEach(ch=>{
     ch.addEventListener('click', ()=>{
       document.querySelectorAll('#edit-cat-chips .chip').forEach(c=>c.classList.remove('selected'));
+      ch.classList.add('selected');
+      document.getElementById('edit-lodging-fields').style.display = ch.dataset.cat === 'Logement' ? 'block' : 'none';
+      document.getElementById('edit-transport-fields').style.display = ch.dataset.cat === 'Transport' ? 'block' : 'none';
+    });
+  });
+  document.querySelectorAll('#edit-transport-type-chips .chip').forEach(ch=>{
+    ch.addEventListener('click', ()=>{
+      document.querySelectorAll('#edit-transport-type-chips .chip').forEach(c=>c.classList.remove('selected'));
       ch.classList.add('selected');
     });
   });
@@ -1019,6 +1159,27 @@ function saveEditExpense(id){
   e.country = document.getElementById('edit-country').value.trim() || 'Autre';
   e.desc = document.getElementById('edit-desc').value.trim();
   e.date = document.getElementById('edit-date').value;
+  if(e.category === 'Logement'){
+    const checkin = document.getElementById('edit-checkin').value;
+    const nights = parseInt(document.getElementById('edit-nights').value, 10);
+    if(checkin) e.checkin = checkin; else delete e.checkin;
+    if(nights && nights > 0) e.nights = nights; else delete e.nights;
+  } else {
+    delete e.checkin;
+    delete e.nights;
+  }
+  if(e.category === 'Transport'){
+    const typeChip = document.querySelector('#edit-transport-type-chips .chip.selected');
+    const from = document.getElementById('edit-from').value.trim();
+    const to = document.getElementById('edit-to').value.trim();
+    if(typeChip) e.transportType = typeChip.dataset.type; else delete e.transportType;
+    if(from) e.from = from; else delete e.from;
+    if(to) e.to = to; else delete e.to;
+  } else {
+    delete e.transportType;
+    delete e.from;
+    delete e.to;
+  }
   saveState();
   closeSheet();
   renderJournal();
