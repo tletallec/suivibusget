@@ -6,42 +6,44 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Budget Voyage">
-<meta name="theme-color" content="#2B2A28">
+<meta name="theme-color" content="#155EFF">
 <title>Budget Voyage</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
-    --paper:#FAF6EF;
-    --paper-2:#F1EBDD;
-    --paper-3:#E8E0CC;
-    --ink:#2B2A28;
-    --ink-soft:#6b6862;
-    --terracotta:#C1552C;
-    --terracotta-soft:#e9c3b2;
-    --sauge:#6B7A5E;
-    --sauge-soft:#d7dfd0;
-    --brique:#A63D2F;
-    --brique-soft:#f0d3ce;
-    --line:#E4DCC9;
+    --paper:#F4F7FC;
+    --paper-2:#EAF0FB;
+    --paper-3:#DCE6FA;
+    --ink:#0B1120;
+    --ink-soft:#5B6478;
+    --terracotta:#155EFF;
+    --terracotta-soft:#cfe0ff;
+    --sauge:#0FAA5F;
+    --sauge-soft:#d3f3e2;
+    --brique:#FF4D6A;
+    --brique-soft:#ffd9e0;
+    --line:#E4E9F5;
     --card:#ffffff;
-    --shadow: 0 2px 10px rgba(43,42,40,0.06);
+    --shadow: 0 4px 20px rgba(11,17,32,0.08);
+    --lime:#9AFF29;
   }
   [data-theme="dark"]{
-    --paper:#1C1B19;
-    --paper-2:#26241F;
-    --paper-3:#332F28;
-    --ink:#F3EEE2;
-    --ink-soft:#a39d8d;
-    --terracotta:#E07850;
-    --terracotta-soft:#4a2e22;
-    --sauge:#93a686;
-    --sauge-soft:#2c3327;
-    --brique:#e0685a;
-    --brique-soft:#3d2320;
-    --line:#3a362e;
-    --card:#242220;
-    --shadow: 0 2px 14px rgba(0,0,0,0.35);
+    --paper:#0A0E1A;
+    --paper-2:#131A2C;
+    --paper-3:#1C2540;
+    --ink:#F0F4FF;
+    --ink-soft:#8A93AC;
+    --terracotta:#3B82FF;
+    --terracotta-soft:#1a2e57;
+    --sauge:#2FD980;
+    --sauge-soft:#0f2e21;
+    --brique:#FF6B85;
+    --brique-soft:#3d1a24;
+    --line:#232D48;
+    --card:#111827;
+    --shadow: 0 4px 20px rgba(0,0,0,0.4);
+    --lime:#9AFF29;
   }
   *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
   html,body{height:100%;}
@@ -80,9 +82,9 @@
     font-weight:500;
   }
   .topbar h1{
-    font-family:'Fraunces',serif;
+    font-family:'Space Grotesk',sans-serif;
     font-size:26px;
-    font-weight:500;
+    font-weight:700;
     margin:0;
     color:var(--ink);
   }
@@ -95,65 +97,92 @@
 
   /* ---------- Hero (résumé) ---------- */
   .hero-card{
-    background:var(--ink);
-    border-radius:20px;
+    background:linear-gradient(135deg, var(--terracotta) 0%, #3B7BFF 100%);
+    border-radius:22px;
     padding:24px 22px;
-    color:var(--paper);
+    color:white;
     margin-bottom:18px;
     position:relative;
+    overflow:hidden;
+    box-shadow:0 12px 30px rgba(21,94,255,0.25);
   }
-  [data-theme="dark"] .hero-card{ background:var(--card); border:1px solid var(--line); }
+  .hero-card::after{
+    content:'';
+    position:absolute;
+    top:-40px; right:-40px;
+    width:140px; height:140px;
+    background:rgba(255,255,255,0.12);
+    border-radius:50%;
+    pointer-events:none;
+  }
+  [data-theme="dark"] .hero-card{ box-shadow:0 12px 30px rgba(59,130,255,0.18); }
   .hero-card .label{
-    font-size:13px;
-    color:#c9c4b6;
+    font-size:12.5px;
+    color:rgba(255,255,255,0.78);
     margin:0 0 6px;
+    font-weight:600;
+    text-transform:uppercase;
+    letter-spacing:0.4px;
+    position:relative;
   }
   [data-theme="dark"] .hero-card .label{ color:var(--ink-soft); }
   .hero-card .amount{
-    font-family:'Fraunces',serif;
+    font-family:'Space Grotesk',sans-serif;
     font-size:42px;
-    font-weight:500;
+    font-weight:700;
     margin:0;
     font-variant-numeric:tabular-nums;
     letter-spacing:-0.5px;
     line-height:1.05;
+    color:white;
+    position:relative;
   }
-  .hero-card .amount.neg{ color:var(--brique); }
+  .hero-card .amount.neg{ color:#FFD6DD; }
   .hero-card .amount span{
-    font-size:19px;
-    color:#c9c4b6;
+    font-size:18px;
+    color:rgba(255,255,255,0.8);
     font-family:'Inter',sans-serif;
+    font-weight:600;
   }
-  [data-theme="dark"] .hero-card .amount span{ color:var(--ink-soft); }
   .pending-hint{
     font-size:12.5px;
-    color:var(--terracotta);
+    color:rgba(255,255,255,0.85);
     margin:2px 0 0;
-    font-weight:500;
+    font-weight:600;
+    position:relative;
   }
   .hero-sub{
     display:flex;
     justify-content:space-between;
     margin-top:16px;
     padding-top:14px;
-    border-top:1px solid rgba(255,255,255,0.14);
-    font-size:13px;
+    border-top:1px solid rgba(255,255,255,0.22);
+    font-size:12.5px;
     gap:6px;
+    position:relative;
   }
-  [data-theme="dark"] .hero-sub{ border-top:1px solid var(--line); }
-  .hero-sub div span{display:block;color:#c9c4b6;font-size:11.5px;margin-bottom:2px;}
-  [data-theme="dark"] .hero-sub div span{ color:var(--ink-soft); }
-  .hero-sub div b{font-variant-numeric:tabular-nums;font-weight:600;}
+  .hero-sub div span{display:block;color:rgba(255,255,255,0.72);font-size:11px;margin-bottom:2px;font-weight:600;}
+  .hero-sub div b{font-variant-numeric:tabular-nums;font-weight:700; color:white;}
 
   .section-title{
-    font-size:12.5px;
-    font-weight:600;
-    color:var(--ink-soft);
+    font-size:12px;
+    font-weight:700;
+    color:var(--ink);
     margin:22px 0 10px;
-    letter-spacing:0.2px;
+    letter-spacing:0.4px;
+    text-transform:uppercase;
     display:flex;
     justify-content:space-between;
     align-items:center;
+  }
+  .section-title::before{
+    content:'';
+    width:3px;
+    height:12px;
+    background:var(--terracotta);
+    border-radius:2px;
+    display:inline-block;
+    margin-right:7px;
   }
 
   /* ---------- Catégories (barres) ---------- */
@@ -182,6 +211,189 @@
     padding:18px 0;
     text-align:center;
     line-height:1.5;
+  }
+
+  /* ---------- KPI grid ---------- */
+  .kpi-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+    margin:18px 0;
+  }
+  .kpi-card{
+    background:var(--card);
+    border-radius:14px;
+    padding:13px 14px;
+    box-shadow:var(--shadow);
+  }
+  .kpi-card .kpi-label{
+    font-size:11px;
+    color:var(--ink-soft);
+    font-weight:600;
+    margin-bottom:4px;
+    line-height:1.3;
+  }
+  .kpi-card .kpi-value{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:20px;
+    font-weight:500;
+    color:var(--ink);
+    font-variant-numeric:tabular-nums;
+    line-height:1.15;
+  }
+  .kpi-card .kpi-value.warn{ color:var(--brique); }
+  .kpi-card .kpi-value.ok{ color:var(--sauge); }
+  .kpi-card .kpi-sub{
+    font-size:10.5px;
+    color:var(--ink-soft);
+    margin-top:3px;
+  }
+
+  /* ---------- Country tabs ---------- */
+  .country-tabs-wrap{
+    margin:0 -22px 16px;
+    padding:0 22px;
+    overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
+  }
+  .country-tabs{
+    display:flex;
+    gap:6px;
+    padding-bottom:4px;
+    width:max-content;
+  }
+  .country-tab-btn{
+    padding:8px 15px;
+    border-radius:20px;
+    border:1.5px solid var(--line);
+    background:var(--card);
+    font-size:13px;
+    font-weight:700;
+    color:var(--ink-soft);
+    white-space:nowrap;
+    cursor:pointer;
+    font-family:'Inter';
+  }
+  .country-tab-btn.active{
+    background:var(--ink);
+    border-color:var(--ink);
+    color:var(--paper);
+  }
+
+  .pane-section-title{
+    font-size:12px;
+    font-weight:700;
+    color:var(--ink);
+    margin:20px 0 10px;
+    letter-spacing:0.4px;
+    text-transform:uppercase;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+  }
+  .pane-section-title .st-label{
+    display:flex;
+    align-items:center;
+  }
+  .pane-section-title .st-label::before{
+    content:'';
+    width:3px;
+    height:12px;
+    background:var(--terracotta);
+    border-radius:2px;
+    display:inline-block;
+    margin-right:7px;
+  }
+
+  /* ---------- Stacked bar chart (par pays) ---------- */
+  .stacked-bars{
+    background:var(--card);
+    border-radius:16px;
+    padding:16px;
+    box-shadow:var(--shadow);
+  }
+  .stacked-row{ margin-bottom:14px; }
+  .stacked-row:last-child{ margin-bottom:0; }
+  .stacked-row .sr-label{
+    display:flex;
+    justify-content:space-between;
+    font-size:12.5px;
+    margin-bottom:5px;
+  }
+  .stacked-row .sr-label .sname{ font-weight:600; color:var(--ink); }
+  .stacked-row .sr-label .stotal{ color:var(--ink-soft); font-variant-numeric:tabular-nums; }
+  .stacked-bar-bg{
+    height:14px;
+    background:var(--paper-3);
+    border-radius:7px;
+    overflow:hidden;
+    display:flex;
+  }
+  .stacked-seg{ height:100%; }
+
+  /* ---------- Cumulative line chart ---------- */
+  .line-chart-wrap{
+    background:var(--card);
+    border-radius:16px;
+    padding:16px;
+    box-shadow:var(--shadow);
+  }
+  .line-chart-legend{
+    display:flex;
+    gap:16px;
+    margin-top:10px;
+    font-size:11.5px;
+    color:var(--ink-soft);
+  }
+  .line-chart-legend span{ display:flex; align-items:center; gap:5px; }
+  .line-chart-legend .dot{ width:8px; height:8px; border-radius:50%; }
+
+  /* ---------- Calendrier 30 derniers jours ---------- */
+  .day-grid-wrap{
+    background:var(--card);
+    border-radius:16px;
+    padding:16px;
+    box-shadow:var(--shadow);
+  }
+  .day-grid{
+    display:grid;
+    grid-template-columns:repeat(10, 1fr);
+    gap:5px;
+  }
+  .day-cell{
+    aspect-ratio:1;
+    border-radius:5px;
+    background:var(--paper-3);
+    cursor:pointer;
+    border:none;
+    padding:0;
+    position:relative;
+  }
+  .day-cell.future{ background:var(--paper-2); opacity:0.4; cursor:default; }
+  .day-grid-legend{
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+    gap:6px;
+    margin-top:12px;
+    font-size:10.5px;
+    color:var(--ink-soft);
+    font-weight:600;
+  }
+  .day-grid-legend .scale{
+    display:flex;
+    gap:3px;
+  }
+  .day-grid-legend .scale-box{
+    width:11px; height:11px; border-radius:3px;
+  }
+  .day-grid-months{
+    display:flex;
+    justify-content:space-between;
+    font-size:10px;
+    color:var(--ink-soft);
+    font-weight:600;
+    margin-bottom:6px;
   }
 
   /* ---------- Toggle chart ---------- */
@@ -311,7 +523,7 @@
     display:flex;
     gap:8px;
   }
-  .amount-input-row input{ flex:1; font-family:'Fraunces',serif; font-size:24px; font-weight:500; }
+  .amount-input-row input{ flex:1; font-family:'Space Grotesk',sans-serif; font-size:24px; font-weight:500; }
   .amount-input-row select{ width:100px; flex-shrink:0; }
   .converted-hint{
     font-size:12.5px;
@@ -439,7 +651,7 @@
     margin:0 auto 16px;
   }
   .sheet h2{
-    font-family:'Fraunces',serif;
+    font-family:'Space Grotesk',sans-serif;
     font-size:20px;
     font-weight:500;
     margin:0 0 4px;
@@ -529,23 +741,13 @@
         </div>
       </div>
 
-      <p class="section-title">PAR CATÉGORIE</p>
-      <div id="cat-list"></div>
+      <div class="kpi-grid" id="kpi-grid"></div>
 
-      <p class="section-title">
-        RÉPARTITION
-        <span class="toggle-pill">
-          <button id="toggle-cat" class="active" onclick="setChartMode('cat')">Catégorie</button>
-          <button id="toggle-pays" onclick="setChartMode('pays')">Pays</button>
-        </span>
-      </p>
-      <div class="chart-wrap" id="chart-wrap">
-        <svg width="120" height="120" viewBox="0 0 120 120" id="pie-svg"></svg>
-        <div class="chart-legend" id="chart-legend"></div>
+      <div class="country-tabs-wrap">
+        <div class="country-tabs" id="country-tabs"></div>
       </div>
 
-      <p class="section-title">PAR PAYS</p>
-      <div class="country-list" id="country-list"></div>
+      <div id="pane-content"></div>
     </div>
   </section>
 
@@ -562,6 +764,7 @@
         <select id="add-currency"></select>
       </div>
       <p class="converted-hint" id="add-converted"></p>
+      <button type="button" class="ghost-btn" id="add-reverse-btn" onclick="toggleReverseConvert()" style="display:none; margin-top:6px; padding:8px; font-size:12.5px;">Saisir en € plutôt</button>
 
       <label>Catégorie</label>
       <div class="chip-row" id="add-cat-chips"></div>
@@ -571,7 +774,8 @@
       <datalist id="country-suggestions"></datalist>
 
       <label>Description (optionnel)</label>
-      <input type="text" id="add-desc" placeholder="ex : Auberge 2 nuits">
+      <input type="text" id="add-desc" list="desc-suggestions" placeholder="ex : Auberge 2 nuits">
+      <datalist id="desc-suggestions"></datalist>
 
       <div id="lodging-fields" style="display:none;">
         <label>Date d'arrivée</label>
@@ -609,7 +813,7 @@
       <h1>Journal</h1>
     </div>
     <div class="content" id="journal-content-wrap">
-      <input type="text" id="journal-search" placeholder="Rechercher (description, pays, ville...)" style="margin-bottom:10px;">
+      <input type="text" id="journal-search" placeholder="Rechercher (description, pays, montant...)" style="margin-bottom:10px;">
       <div class="chip-row" id="journal-filter-chips" style="margin-bottom:16px;"></div>
       <div id="journal-content"></div>
     </div>
@@ -622,6 +826,8 @@
       <h1>Équipement</h1>
     </div>
     <div class="content">
+      <div class="kpi-grid" id="equip-kpi-grid" style="margin-top:4px;"></div>
+
       <label>Article</label>
       <input type="text" id="equip-name" placeholder="ex : Sac à dos 45L">
 
@@ -632,9 +838,13 @@
       </div>
       <p class="converted-hint" id="equip-converted"></p>
 
+      <label>Statut</label>
+      <div class="chip-row" id="equip-status-chips"></div>
+
       <button class="primary-btn" onclick="submitEquip()">Ajouter l'article</button>
 
       <p class="section-title">ARTICLES</p>
+      <div class="chip-row" id="equip-filter-chips" style="margin-bottom:12px;"></div>
       <div class="entry-list" id="equip-list"></div>
     </div>
   </section>
@@ -648,6 +858,25 @@
     <div class="content">
       <label>Budget total du voyage (€)</label>
       <input type="number" inputmode="decimal" id="settings-budget">
+
+      <p class="section-title">DATES DU VOYAGE</p>
+      <p class="empty-hint" style="padding:0 0 10px; text-align:left;">Utilisées pour calculer le coût moyen par jour et la projection sur le reste du voyage.</p>
+      <label>Date de départ</label>
+      <input type="date" id="settings-trip-start">
+      <label>Date de fin approximative</label>
+      <input type="date" id="settings-trip-end">
+
+      <p class="section-title">DATES PAR PAYS</p>
+      <p class="empty-hint" style="padding:0 0 10px; text-align:left;">Renseigne les dates d'entrée/sortie au fil du voyage pour voir le coût moyen par jour dans chaque pays.</p>
+      <div id="country-dates-list"></div>
+      <label>Ajouter / modifier un pays</label>
+      <input type="text" id="cd-country" list="cd-country-suggestions" placeholder="ex : Canada, Colombie...">
+      <datalist id="cd-country-suggestions"></datalist>
+      <div class="amount-input-row">
+        <input type="date" id="cd-start" style="flex:1;">
+        <input type="date" id="cd-end" style="flex:1;">
+      </div>
+      <button class="ghost-btn" onclick="saveCountryDate()">Enregistrer ces dates</button>
 
       <div class="settings-row" style="margin-top:20px;">
         <div>
@@ -728,25 +957,33 @@ const CURRENCY_LABELS = {
 const CATEGORIES = ["Logement","Transport","Nourriture","Activités","Équipement","Autre"];
 const TRANSPORT_TYPES = ["Avion","Bus","Taxi","Autre"];
 const STATUTS = ["Prévu","Réservé","Payé"];
-const STATUS_COLORS = { "Prévu":"#b8a888", "Réservé":"#c99b3d", "Payé":"#6B7A5E" };
+const EQUIP_STATUTS = ["Acheté","À acheter"];
+const STATUS_COLORS = { "Prévu":"#8A93AC", "Réservé":"#FFB020", "Payé":"#0FAA5F" };
 const CAT_COLORS = {
-  "Logement":"#C1552C","Transport":"#6B7A5E","Nourriture":"#8a7f6a",
-  "Activités":"#4a6670","Équipement":"#A63D2F","Autre":"#b8a888"
+  "Logement":"#155EFF","Transport":"#9AFF29","Nourriture":"#FF9E2C",
+  "Activités":"#00D4C8","Équipement":"#FF4D6A","Autre":"#8A63FF"
 };
-const COUNTRY_PALETTE = ["#C1552C","#6B7A5E","#4a6670","#A63D2F","#b8a888","#8a5a8a","#3d7a5c","#c99b3d"];
+const COUNTRY_PALETTE = ["#155EFF","#9AFF29","#00D4C8","#FF4D6A","#FF9E2C","#8A63FF","#FFB020","#3B7BFF"];
 
 function loadState(){
   const raw = localStorage.getItem('budgetVoyageState');
-  if(raw){
-    try{ return JSON.parse(raw); }catch(e){}
-  }
-  return {
+  const defaults = {
     budget: 12000,
     rates: {...DEFAULT_RATES},
-    expenses: [], // {id, amount, currency, amountEUR, category, country, desc, date}
+    expenses: [], // {id, amount, currency, amountEUR, category, country, desc, date, status}
     equipment: [], // {id, name, amount, currency, amountEUR}
-    dark: false
+    dark: false,
+    tripStart: '2026-09-10',
+    tripEnd: '2027-05-31',
+    countryDates: {} // rempli par l'utilisateur dans Réglages, ex: {'Canada': {start:'2026-09-10', end:'2026-10-05'}}
   };
+  if(raw){
+    try{
+      const parsed = JSON.parse(raw);
+      return { ...defaults, ...parsed, countryDates: { ...defaults.countryDates, ...(parsed.countryDates||{}) } };
+    }catch(e){}
+  }
+  return defaults;
 }
 let state = loadState();
 
@@ -858,7 +1095,7 @@ function seedConfirmedDataIfNeeded(){
 
   EQUIPEMENT_SEED.forEach(item=>{
     state.equipment.push({
-      id: uid(), name: item.name, amount: item.amount, currency: 'EUR', amountEUR: item.amount
+      id: uid(), name: item.name, amount: item.amount, currency: 'EUR', amountEUR: item.amount, status: 'Acheté'
     });
   });
 
@@ -904,19 +1141,18 @@ function showScreen(name){
 }
 
 /* ============ RÉSUMÉ ============ */
-let chartMode = 'cat';
-function setChartMode(mode){
-  chartMode = mode;
-  document.getElementById('toggle-cat').classList.toggle('active', mode==='cat');
-  document.getElementById('toggle-pays').classList.toggle('active', mode==='pays');
-  renderChart();
-}
+let activeCountryTab = 'ALL'; // 'ALL' ou nom d'un pays
 
-function getCategoryTotals(){
+function getCategoryTotals(filterCountry){
   const totals = {};
   CATEGORIES.forEach(c=>totals[c]=0);
-  state.expenses.forEach(e=>{ totals[e.category] = (totals[e.category]||0) + e.amountEUR; });
-  totals["Équipement"] = (totals["Équipement"]||0) + state.equipment.reduce((s,e)=>s+e.amountEUR,0);
+  state.expenses.forEach(e=>{
+    if(filterCountry && filterCountry !== 'ALL' && e.country !== filterCountry) return;
+    totals[e.category] = (totals[e.category]||0) + e.amountEUR;
+  });
+  if(!filterCountry || filterCountry === 'ALL'){
+    totals["Équipement"] = (totals["Équipement"]||0) + state.equipment.reduce((s,e)=>s+e.amountEUR,0);
+  }
   return totals;
 }
 function getCountryTotals(){
@@ -927,10 +1163,29 @@ function getCountryTotals(){
   });
   return totals;
 }
+function getEquipTotal(){
+  return state.equipment.reduce((s,e)=>s+e.amountEUR,0);
+}
+function getGrandTotal(){
+  const catTotals = getCategoryTotals('ALL');
+  return Object.values(catTotals).reduce((a,b)=>a+b,0);
+}
+
+function daysBetween(d1, d2){
+  const a = new Date(d1+'T00:00:00');
+  const b = new Date(d2+'T00:00:00');
+  return Math.round((b-a) / 86400000);
+}
+
+function getSpentSince(startDate){
+  // Somme des dépenses datées à partir de startDate (inclus) jusqu'à aujourd'hui, équipement exclu (achat pré-départ, pas récurrent)
+  return state.expenses
+    .filter(e => e.date && e.date >= startDate)
+    .reduce((s,e)=>s+e.amountEUR, 0);
+}
 
 function renderResume(){
-  const catTotals = getCategoryTotals();
-  const totalSpent = Object.values(catTotals).reduce((a,b)=>a+b,0);
+  const totalSpent = getGrandTotal();
   const reste = state.budget - totalSpent;
 
   document.getElementById('hero-total').textContent = fmtEUR(state.budget);
@@ -953,14 +1208,149 @@ function renderResume(){
     ? nCountries + (nCountries>1 ? ' pays visités' : ' pays visité')
     : 'Ton voyage';
 
-  // Catégories — barres (budget par catégorie = pas de sous-budget par défaut, on affiche juste le total dépensé triable)
-  const catList = document.getElementById('cat-list');
+  renderKPIs(totalSpent);
+  renderCountryTabs();
+  renderPane();
+}
+
+function renderKPIs(totalSpent){
+  const grid = document.getElementById('kpi-grid');
+  const today = todayISO();
+  const tripStart = state.tripStart;
+  const tripEnd = state.tripEnd;
+
+  let daysElapsed = null, daysTotal = null, daysRemaining = null;
+  if(tripStart){
+    daysElapsed = Math.max(0, daysBetween(tripStart, today) + 1);
+  }
+  if(tripStart && tripEnd){
+    daysTotal = Math.max(1, daysBetween(tripStart, tripEnd) + 1);
+    daysRemaining = Math.max(0, daysTotal - daysElapsed);
+  }
+
+  const avgPerDay = (daysElapsed && daysElapsed > 0) ? totalSpent / daysElapsed : null;
+  const projected = (avgPerDay !== null && daysTotal) ? avgPerDay * daysTotal : null;
+  const projectedOver = (projected !== null) ? (projected - state.budget) : null;
+
+  const cards = [];
+
+  cards.push(`
+    <div class="kpi-card">
+      <div class="kpi-label">Coût moyen / jour</div>
+      <div class="kpi-value">${avgPerDay !== null ? fmtEUR(avgPerDay) : '—'}</div>
+      <div class="kpi-sub">${daysElapsed !== null ? daysElapsed + 'j écoulés' : 'Renseigne la date de départ'}</div>
+    </div>
+  `);
+
+  const weekTotal = getSpentSince(isoDateAddDays(today, -6));
+  const monthTotal = getSpentSince(isoDateAddDays(today, -29));
+  cards.push(`
+    <div class="kpi-card">
+      <div class="kpi-label">Cette semaine</div>
+      <div class="kpi-value">${fmtEUR(weekTotal)}</div>
+      <div class="kpi-sub">7 derniers jours</div>
+    </div>
+  `);
+  cards.push(`
+    <div class="kpi-card">
+      <div class="kpi-label">Ce mois</div>
+      <div class="kpi-value">${fmtEUR(monthTotal)}</div>
+      <div class="kpi-sub">30 derniers jours</div>
+    </div>
+  `);
+
+  cards.push(`
+    <div class="kpi-card">
+      <div class="kpi-label">Jours restants</div>
+      <div class="kpi-value">${daysRemaining !== null ? daysRemaining : '—'}</div>
+      <div class="kpi-sub">${daysTotal !== null ? 'sur ' + daysTotal + 'j au total' : 'Renseigne la date de fin'}</div>
+    </div>
+  `);
+
+  let projLabel = '—', projClass = '', projSub = 'Dates du voyage requises';
+  if(projected !== null){
+    projLabel = fmtEUR(projected);
+    if(projectedOver > 0){
+      projClass = 'warn';
+      projSub = `dépassement de ${fmtEUR(projectedOver)} au rythme actuel`;
+    } else {
+      projClass = 'ok';
+      projSub = `marge de ${fmtEUR(-projectedOver)} au rythme actuel`;
+    }
+  }
+  cards.push(`
+    <div class="kpi-card" style="grid-column: span 2;">
+      <div class="kpi-label">Projection fin de voyage</div>
+      <div class="kpi-value ${projClass}">${projLabel}</div>
+      <div class="kpi-sub">${projSub}</div>
+    </div>
+  `);
+
+  const topCat = Object.entries(getCategoryTotals('ALL')).sort((a,b)=>b[1]-a[1])[0];
+  cards.push(`
+    <div class="kpi-card">
+      <div class="kpi-label">Plus gros poste</div>
+      <div class="kpi-value">${topCat && topCat[1] > 0 ? topCat[0] : '—'}</div>
+      <div class="kpi-sub">${topCat && topCat[1] > 0 ? fmtEUR(topCat[1]) : 'Aucune dépense'}</div>
+    </div>
+  `);
+
+  const equipTotal = getEquipTotal();
+  cards.push(`
+    <div class="kpi-card">
+      <div class="kpi-label">Équipement (pré-départ)</div>
+      <div class="kpi-value">${fmtEUR(equipTotal)}</div>
+      <div class="kpi-sub">${state.equipment.length} article${state.equipment.length>1?'s':''}</div>
+    </div>
+  `);
+
+  grid.innerHTML = cards.join('');
+}
+
+function renderCountryTabs(){
+  const tabsEl = document.getElementById('country-tabs');
+  const countryTotals = getCountryTotals();
+  const countries = Object.keys(countryTotals).sort((a,b)=>countryTotals[b]-countryTotals[a]);
+
+  if(!countries.includes(activeCountryTab) && activeCountryTab !== 'ALL'){
+    activeCountryTab = 'ALL';
+  }
+
+  const tabs = ['ALL', ...countries];
+  tabsEl.innerHTML = tabs.map(c=>{
+    const label = c === 'ALL' ? 'Tous' : c;
+    return `<button type="button" class="country-tab-btn ${activeCountryTab===c?'active':''}" onclick="selectCountryTab('${c.replace(/'/g,"\\'")}')">${label}</button>`;
+  }).join('');
+}
+function selectCountryTab(c){
+  activeCountryTab = c;
+  renderCountryTabs();
+  renderPane();
+}
+
+function renderPane(){
+  const pane = document.getElementById('pane-content');
+  if(activeCountryTab === 'ALL'){
+    pane.innerHTML = renderAllPane();
+  } else {
+    pane.innerHTML = renderCountryPane(activeCountryTab);
+  }
+  // (re)attache les listeners du camembert après insertion HTML
+  wireChartToggle();
+  renderChart();
+}
+
+function renderAllPane(){
+  const catTotals = getCategoryTotals('ALL');
+  const totalSpent = Object.values(catTotals).reduce((a,b)=>a+b,0);
   const sortedCats = CATEGORIES.slice().sort((a,b)=>catTotals[b]-catTotals[a]);
   const maxCat = Math.max(...Object.values(catTotals), 1);
+
+  let catHtml;
   if(totalSpent === 0){
-    catList.innerHTML = '<p class="empty-hint">Aucune dépense enregistrée pour l\'instant.<br>Appuie sur le bouton + pour commencer.</p>';
+    catHtml = '<p class="empty-hint">Aucune dépense enregistrée pour l\'instant.<br>Appuie sur le bouton + pour commencer.</p>';
   } else {
-    catList.innerHTML = sortedCats.map(cat=>{
+    catHtml = sortedCats.map(cat=>{
       const val = catTotals[cat];
       if(val === 0) return '';
       const pct = Math.min(100, (val/maxCat)*100);
@@ -971,31 +1361,307 @@ function renderResume(){
     }).join('');
   }
 
-  renderChart();
-
-  // Pays
   const countryTotals = getCountryTotals();
-  const countryList = document.getElementById('country-list');
   const sortedCountries = Object.entries(countryTotals).sort((a,b)=>b[1]-a[1]);
-  if(sortedCountries.length === 0){
-    countryList.innerHTML = '<p class="empty-hint">Aucun pays enregistré pour l\'instant.</p>';
+
+  return `
+    <p class="pane-section-title"><span class="st-label">30 DERNIERS JOURS</span></p>
+    ${renderDayGrid()}
+
+    <p class="pane-section-title"><span class="st-label">PAR CATÉGORIE</span></p>
+    <div id="cat-list">${catHtml}</div>
+
+    <p class="pane-section-title">
+      <span class="st-label">RÉPARTITION</span>
+      <span class="toggle-pill">
+        <button id="toggle-cat" class="active" onclick="setChartMode('cat')">Catégorie</button>
+        <button id="toggle-pays" onclick="setChartMode('pays')">Pays</button>
+      </span>
+    </p>
+    <div class="chart-wrap" id="chart-wrap">
+      <svg width="120" height="120" viewBox="0 0 120 120" id="pie-svg"></svg>
+      <div class="chart-legend" id="chart-legend"></div>
+    </div>
+
+    <p class="pane-section-title"><span class="st-label">DÉPENSE PAR PAYS (par catégorie)</span></p>
+    ${renderStackedBars(sortedCountries)}
+
+    <p class="pane-section-title"><span class="st-label">DÉPENSE CUMULÉE DANS LE TEMPS</span></p>
+    ${renderCumulativeChart()}
+  `;
+}
+
+function renderCountryPane(country){
+  const catTotals = getCategoryTotals(country);
+  const totalInCountry = Object.values(catTotals).reduce((a,b)=>a+b,0);
+  const sortedCats = CATEGORIES.slice().sort((a,b)=>catTotals[b]-catTotals[a]);
+  const maxCat = Math.max(...Object.values(catTotals), 1);
+
+  const cd = (state.countryDates || {})[country];
+  let daysInCountry = null, avgPerDayCountry = null;
+  if(cd && cd.start){
+    const end = cd.end || todayISO();
+    daysInCountry = Math.max(1, daysBetween(cd.start, end) + 1);
+    avgPerDayCountry = totalInCountry / daysInCountry;
+  }
+
+  let catHtml;
+  if(totalInCountry === 0){
+    catHtml = `<p class="empty-hint">Aucune dépense enregistrée pour ${country} pour l'instant.</p>`;
   } else {
-    countryList.innerHTML = sortedCountries.map(([country,val],i)=>{
-      const color = COUNTRY_PALETTE[i % COUNTRY_PALETTE.length];
-      return `<div class="country-item">
-        <span class="cname"><span class="flag-dot" style="background:${color}"></span>${country}</span>
-        <span class="camount">${fmtEUR(val)}</span>
+    catHtml = sortedCats.map(cat=>{
+      const val = catTotals[cat];
+      if(val === 0) return '';
+      const pct = Math.min(100, (val/maxCat)*100);
+      return `<div class="cat-row">
+        <div class="cat-top"><span class="name">${cat}</span><span class="nums">${fmtEUR(val)}</span></div>
+        <div class="bar-bg"><div class="bar-fill ok" style="width:${pct}%; background:${CAT_COLORS[cat]}"></div></div>
       </div>`;
     }).join('');
   }
+
+  const dateInfoHtml = cd && cd.start ? `
+    <div class="kpi-grid" style="grid-template-columns: 1fr 1fr;">
+      <div class="kpi-card">
+        <div class="kpi-label">Jours dans ce pays</div>
+        <div class="kpi-value">${daysInCountry}</div>
+        <div class="kpi-sub">${cd.end ? 'séjour terminé' : 'en cours'}</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Coût moyen / jour</div>
+        <div class="kpi-value">${fmtEUR(avgPerDayCountry)}</div>
+        <div class="kpi-sub">dans ce pays</div>
+      </div>
+    </div>
+  ` : `<p class="empty-hint" style="text-align:left; padding:8px 0;">Ajoute les dates de séjour pour ${country} dans Réglages pour voir le coût moyen par jour ici.</p>`;
+
+  return `
+    ${dateInfoHtml}
+    <p class="pane-section-title"><span class="st-label">TOTAL ${country.toUpperCase()}</span></p>
+    <div class="hero-card" style="padding:16px 18px;">
+      <p class="label">Dépensé dans ce pays</p>
+      <p class="amount" style="font-size:30px;">${fmtNum(totalInCountry)} <span style="font-size:16px;">€</span></p>
+    </div>
+
+    <p class="pane-section-title"><span class="st-label">PAR CATÉGORIE</span></p>
+    <div id="cat-list">${catHtml}</div>
+
+    <p class="pane-section-title"><span class="st-label">RÉPARTITION</span></p>
+    <div class="chart-wrap" id="chart-wrap-country">
+      ${renderMiniPie(catTotals)}
+    </div>
+  `;
+}
+
+function renderMiniPie(totals){
+  const data = Object.entries(totals).filter(([k,v])=>v>0);
+  if(data.length === 0){
+    return '<p class="empty-hint" style="padding:0;">Pas encore de données.</p>';
+  }
+  const total = data.reduce((s,[,v])=>s+v,0);
+  let cumulative = 0;
+  const r = 50, cx=60, cy=60, circ = 2*Math.PI*r;
+  let paths = '';
+  data.forEach(([label,val])=>{
+    const frac = val/total;
+    const dash = frac*circ;
+    const gap = circ - dash;
+    const offset = -cumulative*circ;
+    paths += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${CAT_COLORS[label]||'#999'}" stroke-width="16" stroke-dasharray="${dash} ${gap}" stroke-dashoffset="${offset}" transform="rotate(-90 ${cx} ${cy})"/>`;
+    cumulative += frac;
+  });
+  const legend = data.map(([label,val])=>{
+    const pct = Math.round((val/total)*100);
+    return `<div class="legend-item"><span class="legend-dot" style="background:${CAT_COLORS[label]||'#999'}"></span><span class="lname">${label}</span><span class="lval">${pct}%</span></div>`;
+  }).join('');
+  return `<svg width="120" height="120" viewBox="0 0 120 120">${paths}</svg><div class="chart-legend">${legend}</div>`;
+}
+
+function renderStackedBars(sortedCountries){
+  if(sortedCountries.length === 0){
+    return '<p class="empty-hint">Pas encore de données par pays.</p>';
+  }
+  const maxTotal = Math.max(...sortedCountries.map(([,v])=>v), 1);
+  const rows = sortedCountries.map(([country, total])=>{
+    const catTotals = getCategoryTotals(country);
+    const widthPct = Math.max(4, (total/maxTotal)*100);
+    const segs = CATEGORIES.filter(c=>catTotals[c] > 0).map(cat=>{
+      const segPct = (catTotals[cat]/total)*100;
+      return `<div class="stacked-seg" style="width:${segPct}%; background:${CAT_COLORS[cat]}"></div>`;
+    }).join('');
+    return `<div class="stacked-row">
+      <div class="sr-label"><span class="sname">${country}</span><span class="stotal">${fmtEUR(total)}</span></div>
+      <div class="stacked-bar-bg" style="width:${widthPct}%;">${segs}</div>
+    </div>`;
+  }).join('');
+  const legendItems = CATEGORIES.map(cat=>`<span><span class="dot" style="background:${CAT_COLORS[cat]}"></span>${cat}</span>`).join('');
+  return `<div class="stacked-bars">${rows}<div class="line-chart-legend" style="flex-wrap:wrap; margin-top:14px;">${legendItems}</div></div>`;
+}
+
+function isoDateAddDays(iso, n){
+  const d = new Date(iso+'T12:00:00');
+  d.setDate(d.getDate()+n);
+  return d.toISOString().slice(0,10);
+}
+
+function renderDayGrid(){
+  const today = todayISO();
+  const N = 30;
+  const startDay = isoDateAddDays(today, -(N-1));
+
+  // Totaux par jour (dépenses + équipement compté sur le jour de saisie s'il existe une date, sinon ignoré ici)
+  const byDay = {};
+  state.expenses.forEach(e=>{
+    if(!e.date) return;
+    byDay[e.date] = (byDay[e.date]||0) + e.amountEUR;
+  });
+
+  const days = [];
+  for(let i=0;i<N;i++){
+    days.push(isoDateAddDays(startDay, i));
+  }
+
+  const maxVal = Math.max(...days.map(d=>byDay[d]||0), 1);
+
+  const cells = days.map(d=>{
+    const val = byDay[d] || 0;
+    const isFuture = d > today;
+    let bg = 'var(--paper-3)';
+    if(!isFuture && val > 0){
+      const intensity = Math.min(1, val / maxVal);
+      // Interpolation entre paper-3 (vide) et le bleu électrique (plein), via opacité
+      const alpha = 0.15 + intensity * 0.85;
+      bg = `rgba(21,94,255,${alpha.toFixed(2)})`;
+    }
+    const dateLabel = new Date(d+'T12:00:00').toLocaleDateString('fr-FR', {day:'numeric', month:'short'});
+    const title = val > 0 ? `${dateLabel} — ${fmtEUR(val)}` : dateLabel;
+    return `<button type="button" class="day-cell ${isFuture?'future':''}" style="background:${bg};" title="${title}" onclick="${isFuture?'':`showDayDetail('${d}')`}"></button>`;
+  }).join('');
+
+  const firstLabel = new Date(startDay+'T12:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'short'});
+  const lastLabel = new Date(today+'T12:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'short'});
+
+  return `<div class="day-grid-wrap">
+    <div class="day-grid-months"><span>${firstLabel}</span><span>${lastLabel}</span></div>
+    <div class="day-grid">${cells}</div>
+    <div class="day-grid-legend">
+      <span>Moins</span>
+      <span class="scale">
+        <span class="scale-box" style="background:var(--paper-3);"></span>
+        <span class="scale-box" style="background:rgba(21,94,255,0.35);"></span>
+        <span class="scale-box" style="background:rgba(21,94,255,0.6);"></span>
+        <span class="scale-box" style="background:rgba(21,94,255,0.85);"></span>
+        <span class="scale-box" style="background:rgba(21,94,255,1);"></span>
+      </span>
+      <span>Plus</span>
+    </div>
+  </div>`;
+}
+
+function showDayDetail(dateISO){
+  const dayExpenses = state.expenses.filter(e=>e.date === dateISO);
+  const overlay = document.getElementById('edit-sheet');
+  const dateLabel = new Date(dateISO+'T12:00:00').toLocaleDateString('fr-FR', {weekday:'long', day:'numeric', month:'long'});
+  document.getElementById('edit-title').textContent = dateLabel;
+  const body = document.getElementById('edit-body');
+  if(dayExpenses.length === 0){
+    body.innerHTML = '<p class="empty-hint">Aucune dépense ce jour-là.</p><button class="ghost-btn" onclick="closeSheet()">Fermer</button>';
+  } else {
+    const total = dayExpenses.reduce((s,e)=>s+e.amountEUR,0);
+    const rows = dayExpenses.map(e=>`
+      <div class="entry" onclick="closeSheet(); setTimeout(()=>openEditExpense('${e.id}'), 250);">
+        <div class="e-left">
+          <div class="e-cat">${e.category}</div>
+          <div class="e-desc">${e.desc || e.category}</div>
+          <div class="e-meta">${e.country}</div>
+        </div>
+        <div class="e-right">
+          <div class="e-amount">${fmtEUR(e.amountEUR)}</div>
+        </div>
+      </div>
+    `).join('');
+    body.innerHTML = `
+      <p class="empty-hint" style="text-align:left; padding:0 0 12px;">Total du jour : <b style="color:var(--ink);">${fmtEUR(total)}</b></p>
+      <div class="entry-list">${rows}</div>
+      <button class="ghost-btn" onclick="closeSheet()" style="margin-top:16px;">Fermer</button>
+    `;
+  }
+  overlay.classList.add('active');
+}
+
+function renderCumulativeChart(){
+  if(state.expenses.length === 0){
+    return '<div class="line-chart-wrap"><p class="empty-hint" style="padding:0;">Pas encore de données.</p></div>';
+  }
+  const sorted = state.expenses.slice().filter(e=>e.date).sort((a,b)=>a.date.localeCompare(b.date));
+  if(sorted.length === 0){
+    return '<div class="line-chart-wrap"><p class="empty-hint" style="padding:0;">Pas encore de dépenses datées.</p></div>';
+  }
+
+  const startDate = state.tripStart || sorted[0].date;
+  const endDate = state.tripEnd;
+  let cumulative = 0;
+  const points = [];
+  sorted.forEach(e=>{
+    cumulative += e.amountEUR;
+    points.push({ date: e.date, value: cumulative });
+  });
+  const lastDate = points[points.length-1].date;
+
+  const w = 280, h = 120, pad = 8;
+  const totalDays = endDate ? Math.max(1, daysBetween(startDate, endDate)) : Math.max(1, daysBetween(startDate, lastDate));
+  const maxVal = Math.max(cumulative, state.budget);
+
+  const xOf = (d) => pad + (daysBetween(startDate, d) / totalDays) * (w - pad*2);
+  const yOf = (v) => h - pad - (v / maxVal) * (h - pad*2);
+
+  let pathD = '';
+  points.forEach((p,i)=>{
+    const x = Math.max(pad, Math.min(w-pad, xOf(p.date)));
+    const y = Math.max(pad, Math.min(h-pad, yOf(p.value)));
+    pathD += (i===0 ? 'M' : 'L') + x.toFixed(1) + ',' + y.toFixed(1) + ' ';
+  });
+
+  let budgetLine = '';
+  if(endDate){
+    const x1 = xOf(startDate), y1 = yOf(0);
+    const x2 = xOf(endDate), y2 = yOf(state.budget);
+    budgetLine = `<line x1="${x1}" y1="${y1}" x2="${Math.min(w-pad,x2)}" y2="${Math.max(pad,y2)}" stroke="var(--sauge)" stroke-width="1.5" stroke-dasharray="4 3"/>`;
+  }
+
+  return `<div class="line-chart-wrap">
+    <svg width="100%" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" style="overflow:visible;">
+      ${budgetLine}
+      <path d="${pathD}" fill="none" stroke="var(--terracotta)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+    </svg>
+    <div class="line-chart-legend">
+      <span><span class="dot" style="background:var(--terracotta);"></span>Dépenses cumulées</span>
+      ${endDate ? '<span><span class="dot" style="background:var(--sauge);"></span>Trajectoire budget</span>' : ''}
+    </div>
+  </div>`;
+}
+
+let chartMode = 'cat';
+function wireChartToggle(){
+  const btnCat = document.getElementById('toggle-cat');
+  const btnPays = document.getElementById('toggle-pays');
+  if(!btnCat || !btnPays) return;
+  btnCat.classList.toggle('active', chartMode==='cat');
+  btnPays.classList.toggle('active', chartMode==='pays');
+}
+function setChartMode(mode){
+  chartMode = mode;
+  wireChartToggle();
+  renderChart();
 }
 
 function renderChart(){
   const svg = document.getElementById('pie-svg');
+  if(!svg) return; // pas de camembert sur ce panneau (ex: vue pays qui a son propre mini-pie)
   const legend = document.getElementById('chart-legend');
   let data, colors;
   if(chartMode === 'cat'){
-    const totals = getCategoryTotals();
+    const totals = getCategoryTotals('ALL');
     data = Object.entries(totals).filter(([k,v])=>v>0);
     colors = data.map(([k])=>CAT_COLORS[k]);
   } else {
@@ -1061,6 +1727,10 @@ function renderAddForm(){
   if(!knownCountries.includes('Transverse / Global')) knownCountries.push('Transverse / Global');
   countryList.innerHTML = knownCountries.map(c=>`<option value="${c}">`).join('');
 
+  const descList = document.getElementById('desc-suggestions');
+  const knownDescs = [...new Set(state.expenses.map(e=>e.desc).filter(Boolean))];
+  descList.innerHTML = knownDescs.map(d=>`<option value="${d.replace(/"/g,'&quot;')}">`).join('');
+
   document.getElementById('add-amount').addEventListener('input', updateConvertedHint);
   document.getElementById('add-currency').addEventListener('change', updateConvertedHint);
   updateConvertedHint();
@@ -1105,18 +1775,38 @@ function updateLodgingFieldsVisibility(cat){
     }
   }
 }
+let reverseConvertMode = false;
+function toggleReverseConvert(){
+  reverseConvertMode = !reverseConvertMode;
+  const btn = document.getElementById('add-reverse-btn');
+  const amountInput = document.getElementById('add-amount');
+  btn.textContent = reverseConvertMode ? 'Revenir à la devise locale' : 'Saisir en € plutôt';
+  amountInput.value = '';
+  updateConvertedHint();
+}
 function updateConvertedHint(){
   const amount = parseFloat(document.getElementById('add-amount').value) || 0;
   const cur = document.getElementById('add-currency').value;
   const hint = document.getElementById('add-converted');
-  if(amount > 0 && cur !== 'EUR'){
+  const reverseBtn = document.getElementById('add-reverse-btn');
+
+  reverseBtn.style.display = (cur !== 'EUR') ? 'block' : 'none';
+  if(cur === 'EUR' && reverseConvertMode){ reverseConvertMode = false; reverseBtn.textContent = 'Saisir en € plutôt'; }
+
+  if(amount <= 0){ hint.innerHTML = ''; return; }
+
+  if(reverseConvertMode && cur !== 'EUR'){
+    const rate = state.rates[cur] || 1;
+    const localAmount = rate > 0 ? amount / rate : 0;
+    hint.innerHTML = `≈ <b>${localAmount.toLocaleString('fr-FR',{maximumFractionDigits:2})} ${cur}</b>`;
+  } else if(cur !== 'EUR'){
     hint.innerHTML = `≈ <b>${fmtEUR(toEUR(amount, cur))}</b>`;
   } else {
     hint.innerHTML = '';
   }
 }
 function submitExpense(){
-  const amount = parseFloat(document.getElementById('add-amount').value);
+  let amount = parseFloat(document.getElementById('add-amount').value);
   const currency = document.getElementById('add-currency').value;
   const country = document.getElementById('add-country').value.trim();
   const desc = document.getElementById('add-desc').value.trim();
@@ -1125,10 +1815,29 @@ function submitExpense(){
   if(!amount || amount <= 0){ showToast('Entre un montant valide'); return; }
   if(!selectedCat){ showToast('Choisis une catégorie'); return; }
 
+  if(reverseConvertMode && currency !== 'EUR'){
+    const rate = state.rates[currency] || 1;
+    amount = rate > 0 ? amount / rate : amount;
+  }
+
+  // Détection de doublon : même montant/devise/catégorie/date, ajouté il y a moins d'une minute
+  const now = Date.now();
+  const possibleDuplicate = state.expenses.find(e =>
+    e.amount === amount && e.currency === currency && e.category === selectedCat && e.date === date &&
+    e.createdAt && (now - e.createdAt) < 60000
+  );
+  if(possibleDuplicate && !window.__confirmedDuplicate){
+    window.__confirmedDuplicate = true;
+    showToast('Dépense similaire déjà ajoutée à l\'instant — appuie encore pour confirmer');
+    setTimeout(()=>{ window.__confirmedDuplicate = false; }, 4000);
+    return;
+  }
+  window.__confirmedDuplicate = false;
+
   const entry = {
     id: uid(), amount, currency, amountEUR: toEUR(amount, currency),
     category: selectedCat, country: country || 'Autre', desc, date,
-    status: selectedStatus || 'Payé'
+    status: selectedStatus || 'Payé', createdAt: now
   };
 
   if(selectedCat === 'Logement'){
@@ -1148,7 +1857,7 @@ function submitExpense(){
 
   state.expenses.push(entry);
   saveState();
-  showToast('Dépense ajoutée');
+  showToast(`✓ ${fmtEUR(entry.amountEUR)} · ${entry.category} ajoutée`);
 
   document.getElementById('add-amount').value = '';
   document.getElementById('add-desc').value = '';
@@ -1157,6 +1866,8 @@ function submitExpense(){
   document.getElementById('add-to').value = '';
   selectedCat = null;
   selectedTransportType = null;
+  reverseConvertMode = false;
+  document.getElementById('add-reverse-btn').textContent = 'Saisir en € plutôt';
   document.querySelectorAll('#add-cat-chips .chip').forEach(ch=>ch.classList.remove('selected'));
   document.querySelectorAll('#add-transport-type-chips .chip').forEach(ch=>ch.classList.remove('selected'));
   selectStatusChip('Payé');
@@ -1210,7 +1921,8 @@ function renderJournalList(){
   }
   if(journalSearchTerm){
     filtered = filtered.filter(e=>{
-      const haystack = [e.desc, e.country, e.from, e.to, e.category, e.status].filter(Boolean).join(' ').toLowerCase();
+      const amountStr = e.amountEUR.toFixed(2) + ' ' + Math.round(e.amountEUR);
+      const haystack = [e.desc, e.country, e.from, e.to, e.category, e.status, amountStr].filter(Boolean).join(' ').toLowerCase();
       return haystack.includes(journalSearchTerm);
     });
   }
@@ -1312,6 +2024,7 @@ function openEditExpense(id){
     <label>Statut</label>
     <div class="chip-row" id="edit-status-chips">${STATUTS.map(s=>`<button type="button" class="chip ${s===(e.status||'Payé')?'selected':''}" data-status="${s}">${s}</button>`).join('')}</div>
     <button class="primary-btn" onclick="saveEditExpense('${id}')">Enregistrer</button>
+    <button class="ghost-btn" onclick="duplicateExpense('${id}')">Dupliquer cette dépense</button>
     <button class="ghost-btn danger-btn" onclick="deleteExpense('${id}')">Supprimer cette dépense</button>
     <button class="ghost-btn" onclick="closeSheet()">Annuler</button>
   `;
@@ -1388,11 +2101,25 @@ function deleteExpense(id){
   renderJournal();
   showToast('Supprimé');
 }
+function duplicateExpense(id){
+  const e = state.expenses.find(x=>x.id===id);
+  if(!e) return;
+  const copy = { ...e, id: uid(), date: todayISO(), createdAt: Date.now() };
+  delete copy.checkin; // une nuit dupliquée n'a pas la même date d'arrivée
+  state.expenses.push(copy);
+  saveState();
+  closeSheet();
+  renderJournal();
+  showToast(`✓ Dupliquée — ${fmtEUR(copy.amountEUR)} aujourd'hui`);
+}
 function closeSheet(){
   document.getElementById('edit-sheet').classList.remove('active');
 }
 
 /* ============ ÉQUIPEMENT ============ */
+let equipFilterStatus = null;
+let selectedEquipStatus = 'Acheté';
+
 function renderEquip(){
   populateCurrencySelect(document.getElementById('equip-currency'));
   document.getElementById('equip-amount').oninput = ()=>{
@@ -1403,18 +2130,72 @@ function renderEquip(){
   };
   document.getElementById('equip-currency').onchange = document.getElementById('equip-amount').oninput;
 
+  const statusChips = document.getElementById('equip-status-chips');
+  if(!statusChips.dataset.built){
+    statusChips.innerHTML = EQUIP_STATUTS.map(s=>`<button type="button" class="chip ${s===selectedEquipStatus?'selected':''}" data-status="${s}" onclick="selectEquipStatusChip('${s}')">${s}</button>`).join('');
+    statusChips.dataset.built = "1";
+  }
+
   const total = state.equipment.reduce((s,e)=>s+e.amountEUR,0);
+  const boughtTotal = state.equipment.filter(e=>(e.status||'Acheté')==='Acheté').reduce((s,e)=>s+e.amountEUR,0);
+  const toBuyTotal = total - boughtTotal;
+  const nToBuy = state.equipment.filter(e=>(e.status||'Acheté')==='À acheter').length;
+
   document.getElementById('equip-total-eyebrow').textContent = fmtEUR(total) + ' au total';
 
+  const kpiGrid = document.getElementById('equip-kpi-grid');
+  kpiGrid.innerHTML = `
+    <div class="kpi-card">
+      <div class="kpi-label">Déjà acheté</div>
+      <div class="kpi-value ok">${fmtEUR(boughtTotal)}</div>
+      <div class="kpi-sub">${state.equipment.length - nToBuy} article${(state.equipment.length-nToBuy)>1?'s':''}</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Reste à acheter</div>
+      <div class="kpi-value ${nToBuy>0?'warn':''}">${fmtEUR(toBuyTotal)}</div>
+      <div class="kpi-sub">${nToBuy} article${nToBuy>1?'s':''}</div>
+    </div>
+  `;
+
+  const filterChips = document.getElementById('equip-filter-chips');
+  const filters = ['Tous', ...EQUIP_STATUTS];
+  filterChips.innerHTML = filters.map(f=>{
+    const val = f === 'Tous' ? null : f;
+    const isActive = equipFilterStatus === val;
+    return `<button type="button" class="chip ${isActive?'selected':''}" onclick="setEquipFilter(${val?`'${val}'`:'null'})">${f}</button>`;
+  }).join('');
+
+  renderEquipList();
+}
+
+function setEquipFilter(status){
+  equipFilterStatus = status;
+  renderEquip();
+}
+function selectEquipStatusChip(status){
+  selectedEquipStatus = status;
+  document.querySelectorAll('#equip-status-chips .chip').forEach(ch=>{
+    ch.classList.toggle('selected', ch.dataset.status === status);
+  });
+}
+
+function renderEquipList(){
   const list = document.getElementById('equip-list');
-  if(state.equipment.length === 0){
+  let items = state.equipment.slice();
+  if(equipFilterStatus){
+    items = items.filter(e => (e.status||'Acheté') === equipFilterStatus);
+  }
+  if(items.length === 0){
     list.innerHTML = '<p class="empty-hint">Aucun article pour l\'instant.</p>';
     return;
   }
-  list.innerHTML = state.equipment.slice().reverse().map(e=>{
+  list.innerHTML = items.slice().reverse().map(e=>{
     const origLabel = e.currency !== 'EUR' ? `${e.amount.toLocaleString('fr-FR')} ${e.currency}` : '';
-    return `<div class="entry" onclick="deleteEquipConfirm('${e.id}')">
+    const status = e.status || 'Acheté';
+    const badgeColor = status === 'Acheté' ? 'var(--sauge)' : '#FFB020';
+    return `<div class="entry" onclick="openEditEquip('${e.id}')">
       <div class="e-left">
+        <div class="e-cat" style="color:${badgeColor};">${status}</div>
         <div class="e-desc">${e.name}</div>
       </div>
       <div class="e-right">
@@ -1424,13 +2205,14 @@ function renderEquip(){
     </div>`;
   }).join('');
 }
+
 function submitEquip(){
   const name = document.getElementById('equip-name').value.trim();
   const amount = parseFloat(document.getElementById('equip-amount').value);
   const currency = document.getElementById('equip-currency').value;
   if(!name){ showToast('Nom de l\'article requis'); return; }
   if(!amount || amount<=0){ showToast('Montant invalide'); return; }
-  state.equipment.push({ id: uid(), name, amount, currency, amountEUR: toEUR(amount,currency) });
+  state.equipment.push({ id: uid(), name, amount, currency, amountEUR: toEUR(amount,currency), status: selectedEquipStatus });
   saveState();
   document.getElementById('equip-name').value = '';
   document.getElementById('equip-amount').value = '';
@@ -1438,15 +2220,37 @@ function submitEquip(){
   renderEquip();
   showToast('Article ajouté');
 }
-function deleteEquipConfirm(id){
+function openEditEquip(id){
+  const e = state.equipment.find(x=>x.id===id);
+  if(!e) return;
+  const status = e.status || 'Acheté';
   const overlay = document.getElementById('edit-sheet');
-  document.getElementById('edit-title').textContent = 'Supprimer l\'article ?';
+  document.getElementById('edit-title').textContent = e.name;
   document.getElementById('edit-body').innerHTML = `
-    <p style="color:var(--ink-soft); font-size:14px;">Cette action est définitive.</p>
-    <button class="primary-btn danger-btn" style="background:var(--brique);" onclick="deleteEquip('${id}')">Supprimer</button>
+    <p class="empty-hint" style="text-align:left; padding:0 0 12px;">${fmtEUR(e.amountEUR)}${e.currency!=='EUR' ? ' · ' + e.amount.toLocaleString('fr-FR') + ' ' + e.currency : ''}</p>
+    <label>Statut</label>
+    <div class="chip-row" id="equip-edit-status-chips">${EQUIP_STATUTS.map(s=>`<button type="button" class="chip ${s===status?'selected':''}" data-status="${s}">${s}</button>`).join('')}</div>
+    <button class="primary-btn" onclick="saveEquipStatus('${id}')">Enregistrer</button>
+    <button class="ghost-btn danger-btn" onclick="deleteEquip('${id}')">Supprimer cet article</button>
     <button class="ghost-btn" onclick="closeSheet()">Annuler</button>
   `;
+  document.querySelectorAll('#equip-edit-status-chips .chip').forEach(ch=>{
+    ch.addEventListener('click', ()=>{
+      document.querySelectorAll('#equip-edit-status-chips .chip').forEach(c=>c.classList.remove('selected'));
+      ch.classList.add('selected');
+    });
+  });
   overlay.classList.add('active');
+}
+function saveEquipStatus(id){
+  const e = state.equipment.find(x=>x.id===id);
+  if(!e) return;
+  const chip = document.querySelector('#equip-edit-status-chips .chip.selected');
+  e.status = chip ? chip.dataset.status : e.status;
+  saveState();
+  closeSheet();
+  renderEquip();
+  showToast('Statut mis à jour');
 }
 function deleteEquip(id){
   state.equipment = state.equipment.filter(x=>x.id!==id);
@@ -1465,6 +2269,24 @@ function renderSettings(){
   };
   document.getElementById('dark-toggle').classList.toggle('on', state.dark);
 
+  document.getElementById('settings-trip-start').value = state.tripStart || '';
+  document.getElementById('settings-trip-start').onchange = (e)=>{
+    state.tripStart = e.target.value;
+    saveState();
+    showToast('Date de départ mise à jour');
+  };
+  document.getElementById('settings-trip-end').value = state.tripEnd || '';
+  document.getElementById('settings-trip-end').onchange = (e)=>{
+    state.tripEnd = e.target.value;
+    saveState();
+    showToast('Date de fin mise à jour');
+  };
+
+  renderCountryDatesList();
+  const cdSuggestions = document.getElementById('cd-country-suggestions');
+  const knownCountries = [...new Set(state.expenses.map(e=>e.country).filter(Boolean))];
+  cdSuggestions.innerHTML = knownCountries.map(c=>`<option value="${c}">`).join('');
+
   const ratesList = document.getElementById('rates-list');
   ratesList.innerHTML = Object.entries(state.rates).map(([cur,rate])=>`
     <div class="rate-row">
@@ -1473,6 +2295,44 @@ function renderSettings(){
       <input type="number" step="0.0001" value="${rate}" data-cur="${cur}" onchange="updateRate('${cur}', this.value)" ${cur==='EUR' ? 'disabled' : ''}>
     </div>
   `).join('');
+}
+function renderCountryDatesList(){
+  const list = document.getElementById('country-dates-list');
+  const entries = Object.entries(state.countryDates || {});
+  if(entries.length === 0){
+    list.innerHTML = '<p class="empty-hint" style="padding:8px 0; text-align:left;">Aucune date de pays renseignée pour l\'instant.</p>';
+    return;
+  }
+  list.innerHTML = entries.map(([country, d])=>{
+    const startLabel = d.start ? new Date(d.start+'T12:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'short'}) : '?';
+    const endLabel = d.end ? new Date(d.end+'T12:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'short'}) : 'en cours';
+    return `<div class="rate-row">
+      <span class="rcur" style="width:auto; flex:1;">${country}</span>
+      <span class="rdesc" style="flex:none;">${startLabel} → ${endLabel}</span>
+      <button class="ghost-btn" style="width:auto; margin:0; padding:6px 10px; font-size:12px;" onclick="deleteCountryDate('${country.replace(/'/g,"\\'")}')">✕</button>
+    </div>`;
+  }).join('');
+}
+function saveCountryDate(){
+  const country = document.getElementById('cd-country').value.trim();
+  const start = document.getElementById('cd-start').value;
+  const end = document.getElementById('cd-end').value;
+  if(!country){ showToast('Indique un pays'); return; }
+  if(!start){ showToast('Indique au moins une date de début'); return; }
+  state.countryDates = state.countryDates || {};
+  state.countryDates[country] = { start, end: end || null };
+  saveState();
+  document.getElementById('cd-country').value = '';
+  document.getElementById('cd-start').value = '';
+  document.getElementById('cd-end').value = '';
+  renderCountryDatesList();
+  showToast('Dates enregistrées pour ' + country);
+}
+function deleteCountryDate(country){
+  if(state.countryDates) delete state.countryDates[country];
+  saveState();
+  renderCountryDatesList();
+  showToast('Dates supprimées');
 }
 function updateRate(cur, val){
   const v = parseFloat(val);
@@ -1505,7 +2365,7 @@ function toggleDark(){
 }
 function applyTheme(){
   document.body.setAttribute('data-theme', state.dark ? 'dark' : 'light');
-  document.querySelector('meta[name=theme-color]').setAttribute('content', state.dark ? '#1C1B19' : '#2B2A28');
+  document.querySelector('meta[name=theme-color]').setAttribute('content', state.dark ? '#0A0E1A' : '#155EFF');
 }
 function confirmReset(){
   const overlay = document.getElementById('edit-sheet');
