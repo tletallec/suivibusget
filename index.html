@@ -125,6 +125,12 @@
     font-family:'Inter',sans-serif;
   }
   [data-theme="dark"] .hero-card .amount span{ color:var(--ink-soft); }
+  .pending-hint{
+    font-size:12.5px;
+    color:var(--terracotta);
+    margin:2px 0 0;
+    font-weight:500;
+  }
   .hero-sub{
     display:flex;
     justify-content:space-between;
@@ -379,6 +385,19 @@
     text-transform:uppercase;
     letter-spacing:0.3px;
     margin-bottom:2px;
+    display:flex;
+    align-items:center;
+    gap:6px;
+  }
+  .status-badge{
+    display:inline-block;
+    padding:1px 7px;
+    border-radius:8px;
+    font-size:9.5px;
+    font-weight:700;
+    color:white;
+    text-transform:none;
+    letter-spacing:0;
   }
   .entry .e-desc{ font-size:14.5px; font-weight:500; color:var(--ink); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   .entry .e-meta{ font-size:12px; color:var(--ink-soft); margin-top:2px; }
@@ -503,6 +522,7 @@
       <div class="hero-card">
         <p class="label">Reste à dépenser</p>
         <p class="amount" id="hero-reste">0 <span>€</span></p>
+        <p class="pending-hint" id="hero-pending-hint" style="display:none;"></p>
         <div class="hero-sub">
           <div><span>Budget total</span><b id="hero-total">0 €</b></div>
           <div><span>Dépensé</span><b id="hero-depense">0 €</b></div>
@@ -575,6 +595,9 @@
       <label id="add-date-label">Date</label>
       <input type="date" id="add-date">
 
+      <label>Statut</label>
+      <div class="chip-row" id="add-status-chips"></div>
+
       <button class="primary-btn" id="add-submit" onclick="submitExpense()">Ajouter la dépense</button>
     </div>
   </section>
@@ -585,7 +608,10 @@
       <p class="eyebrow" id="journal-count">0 dépenses</p>
       <h1>Journal</h1>
     </div>
-    <div class="content" id="journal-content">
+    <div class="content" id="journal-content-wrap">
+      <input type="text" id="journal-search" placeholder="Rechercher (description, pays, ville...)" style="margin-bottom:10px;">
+      <div class="chip-row" id="journal-filter-chips" style="margin-bottom:16px;"></div>
+      <div id="journal-content"></div>
     </div>
   </section>
 
@@ -701,6 +727,8 @@ const CURRENCY_LABELS = {
 };
 const CATEGORIES = ["Logement","Transport","Nourriture","Activités","Équipement","Autre"];
 const TRANSPORT_TYPES = ["Avion","Bus","Taxi","Autre"];
+const STATUTS = ["Prévu","Réservé","Payé"];
+const STATUS_COLORS = { "Prévu":"#b8a888", "Réservé":"#c99b3d", "Payé":"#6B7A5E" };
 const CAT_COLORS = {
   "Logement":"#C1552C","Transport":"#6B7A5E","Nourriture":"#8a7f6a",
   "Activités":"#4a6670","Équipement":"#A63D2F","Autre":"#b8a888"
@@ -726,39 +754,118 @@ function saveState(){
   localStorage.setItem('budgetVoyageState', JSON.stringify(state));
 }
 
-/* Préremplissage unique des logements Canada déjà réservés (source : conversation Canada itinerary planning) */
-const CANADA_LODGING_SEED = [
-  { checkin:'2026-09-10', nights:3, amount:96,     desc:'Montréal' },
-  { checkin:'2026-09-13', nights:2, amount:61.60,  desc:'Trois-Rivières / Mauricie' },
-  { checkin:'2026-09-15', nights:3, amount:0,      desc:"Québec #1 — chez une amie" },
-  { checkin:'2026-09-18', nights:2, amount:52,     desc:'Charlevoix / Baie-Saint-Paul' },
-  { checkin:'2026-09-20', nights:4, amount:102,    desc:'Tadoussac' },
-  { checkin:'2026-09-24', nights:2, amount:115.03, desc:'Saguenay / Sainte-Rose-du-Nord' },
-  { checkin:'2026-09-26', nights:3, amount:103.17, desc:'Québec #2 — retour' },
-  { checkin:'2026-09-29', nights:2, amount:53.15,  desc:'Ottawa' },
-  { checkin:'2026-10-01', nights:1, amount:82.09,  desc:'Kingston' },
-  { checkin:'2026-10-02', nights:3, amount:151.37, desc:'Toronto' },
+/* Préremplissage unique des dépenses déjà confirmées (source : fichier budget-voyage.xlsx validé) */
+const LODGING_SEED = [
+  { country:'Canada', checkin:'2026-09-10', nights:3, amount:95.97,  desc:'Montréal' },
+  { country:'Canada', checkin:'2026-09-13', nights:2, amount:71.40,  desc:'Trois-Rivières / Mauricie' },
+  { country:'Canada', checkin:'2026-09-15', nights:3, amount:0,      desc:"Québec #1 — chez une amie" },
+  { country:'Canada', checkin:'2026-09-18', nights:2, amount:52.09,  desc:'Baie-Saint-Paul (Charlevoix)' },
+  { country:'Canada', checkin:'2026-09-20', nights:4, amount:102.01, desc:'Tadoussac' },
+  { country:'Canada', checkin:'2026-09-24', nights:2, amount:115.03, desc:'Saguenay' },
+  { country:'Canada', checkin:'2026-09-26', nights:3, amount:119.55, desc:'Québec #2 — retour' },
+  { country:'Canada', checkin:'2026-09-29', nights:2, amount:63.86,  desc:'Ottawa' },
+  { country:'Canada', checkin:'2026-10-01', nights:1, amount:82.09,  desc:'Kingston' },
+  { country:'Canada', checkin:'2026-10-02', nights:3, amount:183.13, desc:'Toronto' },
+  { country:'Mexique', checkin:'2026-10-05', nights:null, amount:107.43, desc:'Mexico City' },
+  { country:'Mexique', checkin:null,          nights:null, amount:34.15,  desc:'Puebla' },
 ];
-function seedCanadaLodgingIfNeeded(){
-  if(state.seededCanadaLodging) return;
-  CANADA_LODGING_SEED.forEach(item=>{
+
+const TRANSPORT_SEED = [
+  { desc:'Avion Nantes → Montréal', from:'Nantes', to:'Montréal', transportType:'Avion', amount:399.34 },
+  { desc:'Avion Toronto → Mexico City', from:'Toronto', to:'Mexico City', transportType:'Avion', amount:296.89 },
+];
+
+const AUTRE_SEED = [
+  { desc:'Vaccins', amount:225.10 },
+  { desc:'Médicaments', amount:77.46 },
+  { desc:'Assurance voyage — Chapka Cap Aventure', amount:641.00 },
+];
+
+const ACTIVITES_SEED = [
+  { country:'Canada', desc:'Excursion baleines — Tadoussac', amount:89.84, date:'2026-09-22' },
+];
+
+const EQUIPEMENT_SEED = [
+  { name:'Sac à dos Arpenaz 1', amount:5.99 },
+  { name:'Micropur Classic X (purification eau)', amount:15.99 },
+  { name:'Sacoche transport', amount:9.99 },
+  { name:'Cadenas code TSA', amount:7.99 },
+  { name:'Cadenas code câble', amount:7.99 },
+  { name:'Cadenas code câble', amount:7.99 },
+  { name:'Étui lunettes rigide', amount:11.99 },
+  { name:'Chaussettes RS 900 High X3 noir', amount:11.99 },
+  { name:'T-shirt ML Flow Seamless', amount:24.99 },
+  { name:'Housse pluie sac à dos', amount:8.99 },
+  { name:'Polaire MH500 1/2 zip', amount:14.99 },
+  { name:'Chaussettes Run500 épaisse mi-saison', amount:7.99 },
+  { name:'T-shirt Dry 500 M kaki', amount:14.99 },
+  { name:'Lot 3 chaussettes', amount:4.99 },
+  { name:'Sac à dos compact travel (SAD)', amount:2.99 },
+  { name:'T-shirt Dry 500 M blanc', amount:14.99 },
+  { name:'Trousse de toilette', amount:14.99 },
+  { name:'Gourde souple filtrante', amount:49.99 },
+  { name:'Poncho pluie', amount:8.99 },
+  { name:'Sac à dos trekking 50L', amount:49.99 },
+];
+
+function seedConfirmedDataIfNeeded(){
+  if(state.seededV2) return;
+
+  // Migration : si l'ancien seed Canada (v1, montants différents) a déjà tourné,
+  // on le retire avant d'insérer les nouvelles données confirmées pour éviter les doublons.
+  if(state.seededCanadaLodging){
+    const oldDescs = new Set(['Montréal','Trois-Rivières / Mauricie',"Québec #1 — chez une amie",
+      'Charlevoix / Baie-Saint-Paul','Tadoussac','Saguenay / Sainte-Rose-du-Nord',
+      'Québec #2 — retour','Ottawa','Kingston','Toronto']);
+    state.expenses = state.expenses.filter(e => !(e.category==='Logement' && e.country==='Canada' && oldDescs.has(e.desc)));
+  }
+
+  LODGING_SEED.forEach(item=>{
+    const entry = {
+      id: uid(), amount: item.amount, currency: 'EUR', amountEUR: item.amount,
+      category: 'Logement', country: item.country, desc: item.desc,
+      date: item.checkin || todayISO(), status: 'Payé'
+    };
+    if(item.checkin) entry.checkin = item.checkin;
+    if(item.nights) entry.nights = item.nights;
+    state.expenses.push(entry);
+  });
+
+  TRANSPORT_SEED.forEach(item=>{
     state.expenses.push({
-      id: uid(),
-      amount: item.amount,
-      currency: 'EUR',
-      amountEUR: item.amount,
-      category: 'Logement',
-      country: 'Canada',
-      desc: item.desc,
-      date: item.checkin,
-      checkin: item.checkin,
-      nights: item.nights
+      id: uid(), amount: item.amount, currency: 'EUR', amountEUR: item.amount,
+      category: 'Transport', country: 'Transverse / Global', desc: item.desc,
+      date: todayISO(), status: 'Payé',
+      transportType: item.transportType, from: item.from, to: item.to
     });
   });
-  state.seededCanadaLodging = true;
+
+  AUTRE_SEED.forEach(item=>{
+    state.expenses.push({
+      id: uid(), amount: item.amount, currency: 'EUR', amountEUR: item.amount,
+      category: 'Autre', country: 'Transverse / Global', desc: item.desc,
+      date: todayISO(), status: 'Payé'
+    });
+  });
+
+  ACTIVITES_SEED.forEach(item=>{
+    state.expenses.push({
+      id: uid(), amount: item.amount, currency: 'EUR', amountEUR: item.amount,
+      category: 'Activités', country: item.country, desc: item.desc,
+      date: item.date || todayISO(), status: 'Payé'
+    });
+  });
+
+  EQUIPEMENT_SEED.forEach(item=>{
+    state.equipment.push({
+      id: uid(), name: item.name, amount: item.amount, currency: 'EUR', amountEUR: item.amount
+    });
+  });
+
+  state.seededV2 = true;
   saveState();
 }
-seedCanadaLodgingIfNeeded();
+seedConfirmedDataIfNeeded();
 
 /* ============ UTILS ============ */
 function fmtEUR(n){
@@ -831,6 +938,15 @@ function renderResume(){
   const heroReste = document.getElementById('hero-reste');
   heroReste.innerHTML = fmtNum(reste) + ' <span>€</span>';
   heroReste.classList.toggle('neg', reste < 0);
+
+  const pendingTotal = state.expenses
+    .filter(e => e.status && e.status !== 'Payé')
+    .reduce((s,e)=>s+e.amountEUR, 0);
+  const pendingHint = document.getElementById('hero-pending-hint');
+  if(pendingHint){
+    pendingHint.textContent = pendingTotal > 0 ? `dont ${fmtEUR(pendingTotal)} pas encore payé` : '';
+    pendingHint.style.display = pendingTotal > 0 ? 'block' : 'none';
+  }
 
   const nCountries = Object.keys(getCountryTotals()).length;
   document.getElementById('resume-eyebrow').textContent = nCountries > 0
@@ -929,11 +1045,20 @@ function renderAddForm(){
     catChips.innerHTML = CATEGORIES.map(c=>`<button type="button" class="chip" data-cat="${c}" onclick="selectCatChip('${c}')">${c}</button>`).join('');
     catChips.dataset.built = "1";
   }
+  const statusChips = document.getElementById('add-status-chips');
+  if(!statusChips.dataset.built){
+    statusChips.innerHTML = STATUTS.map(s=>`<button type="button" class="chip" data-status="${s}" onclick="selectStatusChip('${s}')">${s}</button>`).join('');
+    statusChips.dataset.built = "1";
+  }
+  if(!selectedStatus){
+    selectStatusChip('Payé');
+  }
   populateCurrencySelect(document.getElementById('add-currency'));
   document.getElementById('add-date').value = todayISO();
 
   const countryList = document.getElementById('country-suggestions');
   const knownCountries = [...new Set(state.expenses.map(e=>e.country).filter(Boolean))];
+  if(!knownCountries.includes('Transverse / Global')) knownCountries.push('Transverse / Global');
   countryList.innerHTML = knownCountries.map(c=>`<option value="${c}">`).join('');
 
   document.getElementById('add-amount').addEventListener('input', updateConvertedHint);
@@ -943,12 +1068,19 @@ function renderAddForm(){
 }
 let selectedCat = null;
 let selectedTransportType = null;
+let selectedStatus = null;
 function selectCatChip(cat){
   selectedCat = cat;
   document.querySelectorAll('#add-cat-chips .chip').forEach(ch=>{
     ch.classList.toggle('selected', ch.dataset.cat === cat);
   });
   updateLodgingFieldsVisibility(cat);
+}
+function selectStatusChip(status){
+  selectedStatus = status;
+  document.querySelectorAll('#add-status-chips .chip').forEach(ch=>{
+    ch.classList.toggle('selected', ch.dataset.status === status);
+  });
 }
 function selectTransportTypeChip(type){
   selectedTransportType = type;
@@ -995,7 +1127,8 @@ function submitExpense(){
 
   const entry = {
     id: uid(), amount, currency, amountEUR: toEUR(amount, currency),
-    category: selectedCat, country: country || 'Autre', desc, date
+    category: selectedCat, country: country || 'Autre', desc, date,
+    status: selectedStatus || 'Payé'
   };
 
   if(selectedCat === 'Logement'){
@@ -1026,6 +1159,7 @@ function submitExpense(){
   selectedTransportType = null;
   document.querySelectorAll('#add-cat-chips .chip').forEach(ch=>ch.classList.remove('selected'));
   document.querySelectorAll('#add-transport-type-chips .chip').forEach(ch=>ch.classList.remove('selected'));
+  selectStatusChip('Payé');
   updateLodgingFieldsVisibility(null);
   updateConvertedHint();
 
@@ -1033,16 +1167,68 @@ function submitExpense(){
 }
 
 /* ============ JOURNAL ============ */
+let journalFilterCat = null;
+let journalSearchTerm = '';
+
+function buildJournalFilterChips(){
+  const chipRow = document.getElementById('journal-filter-chips');
+  if(chipRow.dataset.built) return;
+  const chips = ['Toutes', ...CATEGORIES];
+  chipRow.innerHTML = chips.map(c=>{
+    const isAll = c === 'Toutes';
+    return `<button type="button" class="chip ${isAll ? 'selected' : ''}" data-cat="${isAll ? '' : c}" onclick="setJournalFilter(this)">${c}</button>`;
+  }).join('');
+  chipRow.dataset.built = "1";
+}
+function setJournalFilter(el){
+  journalFilterCat = el.dataset.cat || null;
+  document.querySelectorAll('#journal-filter-chips .chip').forEach(ch=>ch.classList.remove('selected'));
+  el.classList.add('selected');
+  renderJournalList();
+}
+
 function renderJournal(){
+  buildJournalFilterChips();
+  const searchInput = document.getElementById('journal-search');
+  if(!searchInput.dataset.bound){
+    searchInput.addEventListener('input', (e)=>{
+      journalSearchTerm = e.target.value.trim().toLowerCase();
+      renderJournalList();
+    });
+    searchInput.dataset.bound = "1";
+  }
+  searchInput.value = journalSearchTerm;
+  renderJournalList();
+}
+
+function renderJournalList(){
   const container = document.getElementById('journal-content');
+
+  let filtered = state.expenses.slice();
+  if(journalFilterCat){
+    filtered = filtered.filter(e => e.category === journalFilterCat);
+  }
+  if(journalSearchTerm){
+    filtered = filtered.filter(e=>{
+      const haystack = [e.desc, e.country, e.from, e.to, e.category, e.status].filter(Boolean).join(' ').toLowerCase();
+      return haystack.includes(journalSearchTerm);
+    });
+  }
+
   document.getElementById('journal-count').textContent =
-    state.expenses.length + (state.expenses.length>1 ? ' dépenses' : ' dépense');
+    filtered.length + (filtered.length>1 ? ' dépenses' : ' dépense') +
+    (filtered.length !== state.expenses.length ? ` (sur ${state.expenses.length})` : '');
 
   if(state.expenses.length === 0){
     container.innerHTML = '<p class="empty-hint">Aucune dépense pour l\'instant.</p>';
     return;
   }
-  const sorted = state.expenses.slice().sort((a,b)=> (b.date||'').localeCompare(a.date||'') || b.id.localeCompare(a.id));
+  if(filtered.length === 0){
+    container.innerHTML = '<p class="empty-hint">Aucun résultat pour cette recherche.</p>';
+    return;
+  }
+
+  const sorted = filtered.sort((a,b)=> (b.date||'').localeCompare(a.date||'') || b.id.localeCompare(a.id));
   const byDay = {};
   sorted.forEach(e=>{
     const d = e.date || 'Sans date';
@@ -1072,7 +1258,7 @@ function renderJournal(){
       }
       html += `<div class="entry" onclick="openEditExpense('${e.id}')">
         <div class="e-left">
-          <div class="e-cat">${e.category}</div>
+          <div class="e-cat">${e.category}${e.status && e.status !== 'Payé' ? ` <span class="status-badge" style="background:${STATUS_COLORS[e.status]||'#999'}">${e.status}</span>` : ''}</div>
           <div class="e-desc">${e.desc || e.category}</div>
           <div class="e-meta">${metaLine}</div>
         </div>
@@ -1123,6 +1309,8 @@ function openEditExpense(id){
     </div>
     <label>Date</label>
     <input type="date" id="edit-date" value="${e.date||todayISO()}">
+    <label>Statut</label>
+    <div class="chip-row" id="edit-status-chips">${STATUTS.map(s=>`<button type="button" class="chip ${s===(e.status||'Payé')?'selected':''}" data-status="${s}">${s}</button>`).join('')}</div>
     <button class="primary-btn" onclick="saveEditExpense('${id}')">Enregistrer</button>
     <button class="ghost-btn danger-btn" onclick="deleteExpense('${id}')">Supprimer cette dépense</button>
     <button class="ghost-btn" onclick="closeSheet()">Annuler</button>
@@ -1143,6 +1331,12 @@ function openEditExpense(id){
       ch.classList.add('selected');
     });
   });
+  document.querySelectorAll('#edit-status-chips .chip').forEach(ch=>{
+    ch.addEventListener('click', ()=>{
+      document.querySelectorAll('#edit-status-chips .chip').forEach(c=>c.classList.remove('selected'));
+      ch.classList.add('selected');
+    });
+  });
   overlay.classList.add('active');
 }
 function saveEditExpense(id){
@@ -1159,6 +1353,8 @@ function saveEditExpense(id){
   e.country = document.getElementById('edit-country').value.trim() || 'Autre';
   e.desc = document.getElementById('edit-desc').value.trim();
   e.date = document.getElementById('edit-date').value;
+  const statusChip = document.querySelector('#edit-status-chips .chip.selected');
+  e.status = statusChip ? statusChip.dataset.status : (e.status || 'Payé');
   if(e.category === 'Logement'){
     const checkin = document.getElementById('edit-checkin').value;
     const nights = parseInt(document.getElementById('edit-nights').value, 10);
